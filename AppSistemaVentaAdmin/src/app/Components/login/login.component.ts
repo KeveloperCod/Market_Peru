@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
     this.mostrarLoading=true;
 
     const request:Login={
-      corre : this.formularioLogin.value.email,
+      correo : this.formularioLogin.value.email,
       clave : this.formularioLogin.value.password
     }
 
