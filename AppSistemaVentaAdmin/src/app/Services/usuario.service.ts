@@ -12,7 +12,7 @@ import { Usuario } from '../Interfaces/usuario';
 })
 export class UsuarioService {
 
-  private urlApi:string= environment.endpoint + "Usuario/";
+  private urlApi:string= environment.endpoint + "usuarios/";
 
   constructor(private http:HttpClient) { }
 

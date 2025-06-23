@@ -24,7 +24,8 @@
                     </button>
                 </mat-form-field>
 
-                <button class="full-width" mat-raised-button color="primary" type="submit"
+                <button class="full-width botonpersonalizado"  mat-raised-button type="submit" style="margin-top: 50px;"
+
                 [disabled]="formularioLogin.invalid">
                     Ingresar
                     <mat-icon matSuffix>login</mat-icon>
@@ -32,7 +33,7 @@
             </form>
         </mat-card-content>
         <mat-card-footer>
-            <mat-progress-bar mode="indeterminate" *ngif="mostrarLoading"></mat-progress-bar>
+            <mat-progress-bar mode="indeterminate" *ngIf="mostrarLoading"></mat-progress-bar>
         </mat-card-footer>
     </mat-card>
 </div>
