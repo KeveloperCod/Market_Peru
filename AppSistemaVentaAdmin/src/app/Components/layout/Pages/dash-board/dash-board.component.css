@@ -1,0 +1,39 @@
+.card-info{
+    width: 80%;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.mat-icon{
+    font-size: 50px !important;
+    height: 50px !important;
+    width: 50px !important;
+}
+
+
+
+.card-info:hover {
+    transform: translateY(-4px);
+}
+
+.mat-icon {
+    font-size: 50px !important;
+    background-color: #f1f1f1;
+    border-radius: 40%;
+   padding: 0px 2px;
+}
+mat-card-header {
+    align-items: center;
+}
+
+mat-card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #050444;
+}
+
+mat-card-subtitle {
+    font-size: 1rem;
+    color: #666666;
+}
