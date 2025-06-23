@@ -1,4 +1,4 @@
 export interface Login {
-    corre:string,
+    correo:string,
     clave:string
 }
