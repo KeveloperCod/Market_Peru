@@ -13,7 +13,7 @@ import com.cibertec.model.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Usuario findByCorreoAndClave(String correo, String clave);
     Usuario findByCorreo(String correo);
-    
+    Boolean existsByCorreo(String correo);
 
 }
 
