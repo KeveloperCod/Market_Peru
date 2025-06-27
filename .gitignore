@@ -1,0 +1,5 @@
+node_modules/
+dist/
+AppSistemaVentaAdmin.zip
+*.log
+.env
