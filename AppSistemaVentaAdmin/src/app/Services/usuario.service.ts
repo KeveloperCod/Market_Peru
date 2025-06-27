@@ -16,14 +16,14 @@ export class UsuarioService {
 
   constructor(private http:HttpClient) { }
 
-  IniciarSesion(request:Login):Observable<ResponseApi>{
-    return this.http.post<ResponseApi>(`${this.urlApi}IniciarSesion`,request)
-  }
+IniciarSesion(request: Login): Observable<Usuario> {
+  return this.http.post<Usuario>(`${this.urlApi}IniciarSesion`, request);
+}
 
-  lista():Observable<ResponseApi>{
-    return this.http.get<ResponseApi>(`${this.urlApi}Lista`)
-  }
 
+lista(): Observable<Usuario[]> {
+  return this.http.get<Usuario[]>(`${this.urlApi}listar`);
+}
   guardar(request: Usuario):Observable<ResponseApi>{
     return this.http.post<ResponseApi>(`${this.urlApi}Guardar`,request)
   }

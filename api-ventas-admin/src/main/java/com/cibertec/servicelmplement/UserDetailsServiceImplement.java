@@ -1,6 +1,5 @@
-package com.cibertec.service;
+package com.cibertec.servicelmplement;
 
-import com.cibertec.model.Rol;
 import com.cibertec.model.Usuario;
 import com.cibertec.repository.UsuarioRepository;
 import lombok.NoArgsConstructor;
@@ -15,14 +14,13 @@ import java.util.Collections;
 
 @NoArgsConstructor
 @Service
-public class UserDetailsServiceImplement  implements UserDetailsService {
+public class UserDetailsServiceImplement implements UserDetailsService {
 
     @Autowired
     UsuarioRepository _usuarioRepository;
 
     @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
-
         Usuario usuario = _usuarioRepository.findByCorreo(correo);
 
         if (usuario == null) {
@@ -30,7 +28,7 @@ public class UserDetailsServiceImplement  implements UserDetailsService {
         }
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(
-                usuario.getRol().getNombre());
+                "ROLE_" + usuario.getRol().getNombre().toUpperCase());
 
         return new org.springframework.security.core.userdetails.User(
                 usuario.getCorreo(),
@@ -39,11 +37,11 @@ public class UserDetailsServiceImplement  implements UserDetailsService {
         );
     }
 
-    public Boolean existsByCorreo(String correo){
+    public Boolean existsByCorreo(String correo) {
         return _usuarioRepository.existsByCorreo(correo);
     }
-    public void save(Usuario usuario){
+
+    public void save(Usuario usuario) {
         _usuarioRepository.save(usuario);
     }
-
 }

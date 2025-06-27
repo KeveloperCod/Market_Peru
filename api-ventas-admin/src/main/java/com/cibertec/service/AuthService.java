@@ -5,6 +5,8 @@ import com.cibertec.dto.RegistroUsuarioDTO;
 import com.cibertec.model.Rol;
 import com.cibertec.model.Usuario;
 import com.cibertec.repository.RolRepository;
+import com.cibertec.servicelmplement.UserDetailsServiceImplement;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;

@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
 })
 export class UsuarioComponent implements OnInit, AfterViewInit {
 
-  columnasTabla: string[]=['nombreCompleto','correo','rolDescripcion','estado','acciones'];
+  columnasTabla: string[]=['nombreCompleto','correo','rol','estado','acciones'];
   dataInicio:Usuario[]=[];
   dataListaUsuarios= new MatTableDataSource(this.dataInicio);
   @ViewChild(MatPaginator) paginacionTabla! : MatPaginator;
@@ -29,17 +29,17 @@ export class UsuarioComponent implements OnInit, AfterViewInit {
     private _utilidadServicio:UtilidadService
   ) { }
 
-  obtenerUsuarios(){
-    this._usuariosServicio.lista().subscribe({
-      next:(data)=>{
-        if(data.status)
-        this.dataListaUsuarios.data=data.value;
-        else
-        this._utilidadServicio.mostrarAlerta("No se encontraron datos","Oops!");
-      },
-      error:(e)=>{}
-    })
-  }
+  obtenerUsuarios() {
+  this._usuariosServicio.lista().subscribe({
+    next: (data) => {
+      this.dataListaUsuarios.data = data;
+    },
+    error: (e) => {
+      this._utilidadServicio.mostrarAlerta("Error al obtener usuarios", "Error");
+    }
+  });
+}
+
 
   ngOnInit(): void {
     this.obtenerUsuarios();

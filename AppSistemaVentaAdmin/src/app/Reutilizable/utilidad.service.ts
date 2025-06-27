@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-
+import { Usuario } from '../Interfaces/usuario';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Sesion } from '../Interfaces/sesion';
 import { duration } from 'moment';
@@ -24,12 +24,10 @@ export class UtilidadService {
     localStorage.setItem("usuario",JSON.stringify(usuarioSesion));
   }
 
-  obtenerSesionUsuario(){
-    const dataCadena=localStorage.getItem("usuario");
-    const usuario=JSON.parse(dataCadena!)
-    return usuario;
-  }
-
+  obtenerSesionUsuario(): Sesion | null {
+  const dataCadena = localStorage.getItem("usuario");
+  return dataCadena ? JSON.parse(dataCadena) : null;
+}
   eliminarSesionUsuario(){
     localStorage.removeItem("usuario");
   }

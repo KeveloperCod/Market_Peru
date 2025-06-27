@@ -1,43 +1,44 @@
 package com.cibertec.servicelmplement;
 
-import java.util.ArrayList;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.cibertec.dto.UsuarioDTO;
 import com.cibertec.model.Usuario;
 import com.cibertec.repository.UsuarioRepository;
 import com.cibertec.service.UsuarioService;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.StoredProcedureQuery;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PersistenceContext
     private EntityManager entityManager;
-    
-    
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    
     @Override
     public boolean validarCredenciales(String correo, String clave) {
-        Usuario usuario = usuarioRepository.findByCorreoAndClave(correo, clave);
-        return usuario != null; 
+        Usuario usuario = usuarioRepository.findByCorreo(correo);
+        return usuario != null && passwordEncoder.matches(clave, usuario.getClave());
     }
 
+
+
     @Override
-    public Usuario registrarUsuario(Usuario usuario) {
+    public Usuario registrarUsuarioConEncriptacion(Usuario usuario) {
+        usuario.setClave(passwordEncoder.encode(usuario.getClave()));
         return usuarioRepository.save(usuario);
     }
 
@@ -62,7 +63,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    @Transactional // <-- sin readOnly = true
+    @Transactional
     public List<UsuarioDTO> listarUsuariosConRol() {
         StoredProcedureQuery query = entityManager.createStoredProcedureQuery("ListarUsuariosxRol");
         List<Object[]> result = query.getResultList();
@@ -72,7 +73,4 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         return usuarios;
     }
-
-
- }
-	
+}

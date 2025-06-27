@@ -1,22 +1,20 @@
+// menu.service.ts
 import { Injectable } from '@angular/core';
-
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Menu } from '../Interfaces/menu';
 import { environment } from 'src/environments/environment';
-import { ResponseApi } from '../Interfaces/response-api';
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class MenuService {
 
-  private urlApi:string= environment.endpoint + "Menu/";
+  private urlApi: string = environment.endpoint + 'Menu/';
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-  
-  lista(idUsuario:number):Observable<ResponseApi>{
-    return this.http.get<ResponseApi>(`${this.urlApi}Lista?idUsuario=${idUsuario}`)
+  lista(idRol: number): Observable<Menu[]> {
+    return this.http.get<Menu[]>(`${this.urlApi}${idRol}`);
   }
 }
