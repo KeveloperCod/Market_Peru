@@ -5,23 +5,21 @@ import { LoginComponent } from './Components/login/login.component';
 const routes: Routes = [
   {
     path: '',
-    component: LoginComponent,
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
     path: 'login',
-    component: LoginComponent,
-    pathMatch: 'full'
+    component: LoginComponent
   },
   {
     path: 'pages',
     loadChildren: () =>
-      import('./Components/layout/layout-routing.module').then(m => m.routes)
+      import('./Components/layout/layout.module').then(m => m.LayoutModule)
   },
   {
     path: '**',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    redirectTo: 'login'
   }
 ];
 
