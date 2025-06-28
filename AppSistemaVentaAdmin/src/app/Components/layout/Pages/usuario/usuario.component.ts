@@ -35,8 +35,7 @@ import Swal from 'sweetalert2';
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatDividerModule,
-    ModalUsuarioComponent
+    MatDividerModule
   ]
 })
 export class UsuarioComponent implements OnInit, AfterViewInit {

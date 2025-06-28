@@ -59,8 +59,7 @@ export const MY_DATA_FORMATS = {
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
-    MatTooltipModule,
-    ModalDetalleVentaComponent
+    MatTooltipModule
   ]
 })
 export class HistorialVentaComponent implements OnInit, AfterViewInit {
