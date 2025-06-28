@@ -1,37 +1,21 @@
-import { NgModule } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LoginComponent } from './Components/login/login.component';
-import { LayoutComponent } from './Components/layout/layout.component';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './Reutilizable/shared/shared.module';
-import { AuthInterceptor } from './Interceptors/auth.interceptor';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    LayoutComponent
-  ],
-  imports: [
-    CommonModule,
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    SharedModule,
-    HttpClientModule
-  ],
+bootstrapApplication(AppComponent, {
   providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
-  ],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
+    importProvidersFrom(
+      BrowserModule,
+      AppRoutingModule,
+      SharedModule
+    ),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideAnimations()
+  ]
+});

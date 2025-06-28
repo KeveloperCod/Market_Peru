@@ -4,23 +4,24 @@ import { LoginComponent } from './Components/login/login.component';
 
 const routes: Routes = [
   {
-    path:'',
-    component:LoginComponent,
-    pathMatch:"full"
+    path: '',
+    component: LoginComponent,
+    pathMatch: 'full'
   },
   {
-    path:'login',
-    component:LoginComponent,
-    pathMatch:"full"
+    path: 'login',
+    component: LoginComponent,
+    pathMatch: 'full'
   },
   {
-    path:'pages',
-    loadChildren:() => import("./Components/layout/layout.module").then(x => x.LayoutModule)
+    path: 'pages',
+    loadChildren: () =>
+      import('./Components/layout/layout-routing.module').then(m => m.routes)
   },
   {
-    path:'**',
-    redirectTo:'login',
-    pathMatch:"full"
+    path: '**',
+    redirectTo: 'login',
+    pathMatch: 'full'
   }
 ];
 
@@ -28,4 +29,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

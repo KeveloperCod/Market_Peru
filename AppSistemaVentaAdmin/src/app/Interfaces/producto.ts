@@ -5,5 +5,6 @@ export interface Producto {
     descripcionCategoria: string,
     stock:number,
     precio:string,
-    esActivo:number
+    esActivo:number,
+     fechaRegistro?: string;
 }

@@ -1,6 +1,14 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+
 import { Rol } from 'src/app/Interfaces/rol';
 import { Usuario } from 'src/app/Interfaces/usuario';
 import { RolService } from 'src/app/Services/rol.service';
@@ -9,8 +17,20 @@ import { UtilidadService } from 'src/app/Reutilizable/utilidad.service';
 
 @Component({
   selector: 'app-modal-usuario',
+  standalone: true,
   templateUrl: './modal-usuario.component.html',
-  styleUrls: ['./modal-usuario.component.css']
+  styleUrls: ['./modal-usuario.component.css'],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatGridListModule,
+    MatButtonModule,
+    MatSelectModule
+  ]
 })
 export class ModalUsuarioComponent implements OnInit {
 
@@ -68,7 +88,7 @@ export class ModalUsuarioComponent implements OnInit {
       correo: this.formularioUsuario.value.correo,
       clave: this.formularioUsuario.value.clave,
       esActivo: this.formularioUsuario.value.esActivo === '1',
-      fechaRegistro: '', // El backend lo puede asignar
+      fechaRegistro: '',
       rol: {
         idRol: this.formularioUsuario.value.idRol,
         nombre: '',
