@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { ResponseApi } from '../Interfaces/response-api';
 import { Login } from '../Interfaces/login';
 import { Usuario } from '../Interfaces/usuario';
+import { LoginResponse } from '../Interfaces/login-response';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,9 @@ export class UsuarioService {
 
   constructor(private http:HttpClient) { }
 
-IniciarSesion(request: Login): Observable<Usuario> {
-  return this.http.post<Usuario>(`${this.urlApi}IniciarSesion`, request);
+IniciarSesion(request: Login): Observable<LoginResponse> {
+  return this.http.post<LoginResponse>("http://localhost:8080/auth/login", request);
 }
-
 
 lista(): Observable<Usuario[]> {
   return this.http.get<Usuario[]>(`${this.urlApi}listar`);
