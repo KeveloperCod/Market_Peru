@@ -1,0 +1,28 @@
+* [33m906b5f5[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m Update backend for DLT
+* [33m1833e91[m[33m ([m[1;31morigin/jwt_daniel[m[33m)[m [FEAT] login and register and endpoint to test
+* [33mfddc3ca[m [FIX] jwt implement
+* [33m14a4506[m [FIX] pom and application properties to jwt and jpa
+*   [33ma2d702e[m Merge pull request #5 from KeveloperCod/Mauricio
+[32m|[m[33m\[m  
+[32m|[m * [33m81b89a4[m Backend Update
+[32m|[m[32m/[m  
+*   [33mfe171c9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #4 from KeveloperCod/dev
+[34m|[m[35m\[m  
+[34m|[m *   [33m5299760[m[33m ([m[1;31morigin/dev[m[33m)[m Merge pull request #3 from KeveloperCod/Lizeth
+[34m|[m [36m|[m[1;31m\[m  
+[34m|[m [36m|[m * [33m6b45701[m[33m ([m[1;31morigin/Lizeth[m[33m)[m agregando estilos login
+[34m|[m [36m|[m[34m/[m  
+[34m|[m[34m/[m[36m|[m   
+[34m|[m [36m|[m * [33md72c52e[m[33m ([m[1;32mdev[m[33m)[m cambio
+[34m|[m [36m|[m[34m/[m  
+[34m|[m[34m/[m[36m|[m   
+* [36m|[m   [33mceee9d8[m Merge pull request #2 from KeveloperCod/fix-frontend-folder
+[36m|[m[1;34m\[m [36m\[m  
+[36m|[m [1;34m|[m[36m/[m  
+[36m|[m[36m/[m[1;34m|[m   
+[36m|[m * [33m18c6edd[m[33m ([m[1;31morigin/fix-frontend-folder[m[33m)[m carpeta front
+[36m|[m[36m/[m  
+[36m|[m * [33m8fa0cfd[m[33m ([m[1;31morigin/DevDiana[m[33m)[m Agrengando Frontend
+[36m|[m * [33m6e0c375[m[33m ([m[1;31morigin/Diana[m[33m)[m Actualizando referencia del frontend Angular
+[36m|[m[36m/[m  
+* [33me9999f2[m Primera Version del proyecto
