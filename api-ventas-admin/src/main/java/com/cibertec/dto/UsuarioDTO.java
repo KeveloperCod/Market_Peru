@@ -16,13 +16,12 @@ public class UsuarioDTO {
         this.nombreCompleto = (String) row[1];
         this.correo = (String) row[2];
         this.rol = (String) row[3];
-        // Manejo robusto para Boolean/TINYINT
         if (row[4] instanceof Boolean) {
             this.esActivo = (Boolean) row[4];
         } else if (row[4] instanceof Number) {
             this.esActivo = ((Number) row[4]).intValue() == 1;
         } else {
-            this.esActivo = false; // Por si acaso viene null o desconocido
+            this.esActivo = false;
         }
         this.fechaRegistro = (Date) row[5];
     }

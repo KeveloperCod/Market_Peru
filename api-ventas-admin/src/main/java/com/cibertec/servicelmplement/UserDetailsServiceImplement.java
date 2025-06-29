@@ -44,4 +44,6 @@ public class UserDetailsServiceImplement implements UserDetailsService {
     public void save(Usuario usuario) {
         _usuarioRepository.save(usuario);
     }
+    
+    
 }

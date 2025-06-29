@@ -1,17 +1,16 @@
+// Usuario.java
 package com.cibertec.model;
 
 import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Entity
 @Table(name = "usuario")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder // ✅ AGREGADO
 public class Usuario {
 
     @Id
@@ -36,13 +35,4 @@ public class Usuario {
 
     @Column(insertable = false, updatable = false)
     private LocalDateTime fechaRegistro;
-
-    public Usuario(String nombreCompleto, String correo, String clave, Rol rol, Boolean esActivo, LocalDateTime fechaRegistro) {
-        this.nombreCompleto = nombreCompleto;
-        this.correo = correo;
-        this.clave = clave;
-        this.rol = rol;
-        this.esActivo = esActivo;
-        this.fechaRegistro = fechaRegistro;
-    }
 }

@@ -1,13 +1,16 @@
+// Rol.java
 package com.cibertec.model;
 
 import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @Entity
 @Table(name = "Rol")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Rol {
 
     @Id

@@ -1,7 +1,9 @@
 package com.cibertec.controller;
 
+import com.cibertec.dto.LoginResponseDTO;
 import com.cibertec.dto.LoginUsuarioDTO;
 import com.cibertec.dto.RegistroUsuarioDTO;
+import com.cibertec.model.Usuario;
 import com.cibertec.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +21,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginUsuarioDTO loginUserDto, BindingResult bindingResult){
+    public ResponseEntity<?> login(@RequestBody LoginUsuarioDTO loginUserDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             return ResponseEntity.badRequest().body("Revisar credenciales de logeo");
         }
         try {
-            String jwt = authService.authenticate(loginUserDto.getCorreo(), loginUserDto.getClave());
-            return ResponseEntity.ok(jwt);
+            LoginResponseDTO response = authService.authenticate(loginUserDto.getCorreo(), loginUserDto.getClave());
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println("Error" + e.getMessage());
-            return ResponseEntity.internalServerError().body("Error al autenticar.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
 

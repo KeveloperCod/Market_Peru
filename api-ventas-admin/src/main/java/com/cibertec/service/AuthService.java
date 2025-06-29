@@ -1,10 +1,12 @@
 package com.cibertec.service;
 
 import com.cibertec.crosscutting.utils.JwtUtil;
+import com.cibertec.dto.LoginResponseDTO;
 import com.cibertec.dto.RegistroUsuarioDTO;
 import com.cibertec.model.Rol;
 import com.cibertec.model.Usuario;
 import com.cibertec.repository.RolRepository;
+import com.cibertec.repository.UsuarioRepository;
 import com.cibertec.servicelmplement.UserDetailsServiceImplement;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,34 +26,57 @@ public class AuthService {
     private final PasswordEncoder _passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManagerBuilder _authenticationManagerBuilder;
+    private final UsuarioRepository usuarioRepository;
 
-    public AuthService(UserDetailsServiceImplement _userDetailsServiceImplement, RolRepository _rolRepository, PasswordEncoder _passwordEncoder, JwtUtil jwtUtil, AuthenticationManagerBuilder _authenticationManagerBuilder) {
+    public AuthService(UserDetailsServiceImplement _userDetailsServiceImplement,
+                       RolRepository _rolRepository,
+                       PasswordEncoder _passwordEncoder,
+                       JwtUtil jwtUtil,
+                       AuthenticationManagerBuilder _authenticationManagerBuilder,
+                       UsuarioRepository usuarioRepository) {
         this._userDetailsServiceImplement = _userDetailsServiceImplement;
         this._rolRepository = _rolRepository;
         this._passwordEncoder = _passwordEncoder;
         this.jwtUtil = jwtUtil;
         this._authenticationManagerBuilder = _authenticationManagerBuilder;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    public String authenticate(String email, String password){
+    public LoginResponseDTO authenticate(String email, String password){
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authResult = _authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
-        return jwtUtil.getToken(authResult);
-    }
+        String token = jwtUtil.getToken(authResult);
+        Usuario usuario = usuarioRepository.findByCorreo(email);
 
+        return new LoginResponseDTO(
+                token,
+                usuario.getIdUsuario(),
+                usuario.getNombreCompleto(),
+                usuario.getCorreo(),
+                usuario.getRol()
+        );
+    }
 
     public void registerUser(RegistroUsuarioDTO newUserDto){
         if(_userDetailsServiceImplement.existsByCorreo(newUserDto.getCorreo())){
             throw new IllegalArgumentException("Ya existe este usuario.");
         }
 
-        Rol role = _rolRepository.findByNombre("User").orElseThrow(() -> new RuntimeException("Rol not found"));
-        Usuario _user = new Usuario(newUserDto.getNombreCompleto(),newUserDto.getCorreo(), _passwordEncoder.encode(newUserDto.getClave()), role, true, LocalDateTime.now());
+        Rol role = _rolRepository.findByNombre("User")
+            .orElseThrow(() -> new RuntimeException("Rol not found"));
 
-        _userDetailsServiceImplement.save(_user);
+        Usuario _user = Usuario.builder()
+            .nombreCompleto(newUserDto.getNombreCompleto())
+            .correo(newUserDto.getCorreo())
+            .clave(_passwordEncoder.encode(newUserDto.getClave()))
+            .rol(role)
+            .esActivo(true)
+            .fechaRegistro(LocalDateTime.now())
+            .build();
 
+        _userDetailsServiceImplement.save(_user); // o usuarioRepository.save(_user);
     }
 
 }

@@ -10,4 +10,5 @@ public class ApiVentasAdminApplication {
 		SpringApplication.run(ApiVentasAdminApplication.class, args);
 	}
 
+	
 }

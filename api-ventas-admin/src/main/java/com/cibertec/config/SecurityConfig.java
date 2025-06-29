@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,19 +29,14 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    /* ----------  BEANS BÁSICOS  ---------- */
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtEntryPoint()))
-                .authenticationProvider(authenticationProvider()) // 👈 Asegura el uso del provider
-                .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
+    /**  Exponemos el filtro para que Spring lo gestione e inyecte sus dependencias  */
     @Bean
     public JwtAuthenticationFilter jwtTokenFilter() {
         return new JwtAuthenticationFilter();
@@ -53,28 +47,50 @@ public class SecurityConfig {
         return new JwtEntryPoint();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    /* ----------  PROVIDER y AUTH MANAGER  ---------- */
 
+    /**  NO hacemos “new UserDetailsServiceImplement()”;  
+     *  Spring ya creó el @Service, lo recibimos por parámetro  */
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImplement();
-    }
+    public AuthenticationProvider authenticationProvider(
+            UserDetailsServiceImplement userDetailsService,   // <- Bean existente
+            PasswordEncoder encoder) {
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(encoder);
+        return provider;
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+    /* ----------  FILTER CHAIN  ---------- */
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           JwtAuthenticationFilter jwtFilter,
+                                           JwtEntryPoint jwtEntryPoint,
+                                           AuthenticationProvider authProvider) throws Exception {
+
+        http.cors(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/auth/login", "/auth/register").permitAll()
+                    .anyRequest().authenticated())
+
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtEntryPoint))
+
+            .authenticationProvider(authProvider)               // <- Provider correcto
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    /* ----------  CORS  ---------- */
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
