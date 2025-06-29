@@ -1,35 +1,39 @@
+// src/app/Services/producto.service.ts
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
-import {environment} from 'src/environments/environment';
-import {ResponseApi} from '../Interfaces/response-api';
+import { environment } from 'src/environments/environment';
 import { Producto } from '../Interfaces/producto';
+import { ResponseApi } from '../Interfaces/response-api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
 
-  private urlApi:string= environment.endpoint + "Producto/";
+  /**  http://localhost:8080/api/  +  productos/  */
+  private urlApi = environment.endpoint + 'productos/';
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  lista():Observable<ResponseApi>{
-    return this.http.get<ResponseApi>(`${this.urlApi}Lista`)
+  /** GET /api/productos/listar  →  Producto[] */
+  lista(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.urlApi}listar`);
   }
 
-  guardar(request: Producto):Observable<ResponseApi>{
-    return this.http.post<ResponseApi>(`${this.urlApi}Guardar`,request)
+  /** POST /api/productos/registrar  →  ResponseApi con msg/estado */
+  guardar(request: Producto): Observable<ResponseApi> {
+    return this.http.post<ResponseApi>(`${this.urlApi}registrar`, request);
   }
 
-  editar(request: Producto):Observable<ResponseApi>{
-    return this.http.put<ResponseApi>(`${this.urlApi}Editar`,request)
+  /** PUT /api/productos/actualizar/{id}  */
+  editar(id: number, request: Producto): Observable<ResponseApi> {
+    return this.http.put<ResponseApi>(`${this.urlApi}actualizar/${id}`, request);
   }
 
-  eliminar(id: number):Observable<ResponseApi>{
-    return this.http.delete<ResponseApi>(`${this.urlApi}Eliminar/${id}`)
+  /** DELETE /api/productos/desactivar/{id}  */
+  eliminar(id: number): Observable<ResponseApi> {
+    return this.http.delete<ResponseApi>(`${this.urlApi}desactivar/${id}`);
   }
-
-
 }

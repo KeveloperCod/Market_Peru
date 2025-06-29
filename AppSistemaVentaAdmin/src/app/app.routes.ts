@@ -12,7 +12,7 @@ export const routes: Routes = [
       import('./Components/layout/layout.component')
         .then(m => m.LayoutComponent),
     children: [
-      { path: '', loadComponent: () =>
+      { path: 'dashboard', loadComponent: () =>
           import('./Components/layout/Pages/dash-board/dash-board.component')
             .then(m => m.DashBoardComponent) },
       { path: 'usuario', loadComponent: () =>

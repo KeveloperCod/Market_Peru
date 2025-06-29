@@ -10,9 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponseDTO {
-    private String token;
-    private int idUsuario;
-    private String nombreCompleto;
-    private String correo;
-    private Rol rol;
+	 private String token;
+	 private UsuarioDTO usuario; 
 }

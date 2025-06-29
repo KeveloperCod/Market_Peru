@@ -104,17 +104,22 @@ export class ModalProductoComponent implements OnInit {
         error: (e) => { }
       });
     } else {
-      this._productoServicio.editar(_producto).subscribe({
-        next: (data) => {
-          if (data.status) {
-            this._utilidadServicio.mostrarAlerta("El producto fue editado correctamente", "Éxito");
-            this.modalActual.close("true");
-          } else {
-            this._utilidadServicio.mostrarAlerta("No se pudo editar el producto", "Error");
+      this._productoServicio
+        .editar(_producto.idProducto!, _producto)   // 1º id, 2º cuerpo
+        .subscribe({
+          next: (resp) => {
+            if (resp.status) {
+              this._utilidadServicio.mostrarAlerta(
+                'El producto fue editado correctamente', 'Éxito'
+              );
+              this.modalActual.close(true);
+            } else {
+              this._utilidadServicio.mostrarAlerta(
+                'No se pudo editar el producto', 'Error'
+              );
+            }
           }
-        },
-        error: (e) => { }
-      });
+        });
+      }
     }
   }
-}

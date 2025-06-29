@@ -1,4 +1,88 @@
-.ListPersonali{
-background-color: #0D5EA6;
-color: #ffffff;
+/* === Barra superior ==================================================== */
+.ListPersonali {
+  background-color: #0d5ea6;
+  color: #ffffff;
+
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 1rem 0 0;
+    letter-spacing: 0.5px;
+  }
+
+  mat-icon {
+    color: #fff;
+    font-size: 24px;
+  }
+
+  button[mat-icon-button] {
+    margin-left: 0.5rem;
+  }
+}
+
+/* === Sidenav =========================================================== */
+mat-sidenav {
+  background: #f5f7fa;
+  border-right: 1px solid #e0e0e0;
+  padding-top: 8px;
+  width: 220px !important;
+
+  mat-icon {
+    color: #546e7a;
+    font-size: 22px;
+  }
+
+  /* ÍTEM DEL MENÚ – AUMENTAMOS TAMAÑO, MÁRGENES Y EFECTOS  */
+  a {
+  
+    margin: 4px 8px;              
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+ 
+
+    mat-icon[mat-list-icon] {
+      font-size: 26px;             /* icono ligeramente mayor */
+    }
+
+    div[mat-line] {
+      margin-left: 14px;           /* separa texto‑icono */
+      font-weight: 500;
+      color: #263238;
+      font-size: 1.05rem;          /* texto un poco más grande */
+    }
+
+    &:hover {
+      background: #e3f2fd;
+      transform: translateX(2px);  /* “push” suave al pasar el ratón */
+    }
+
+    &.active {
+      background: #bbdefb;
+      div[mat-line] {
+        color: #0d47a1;
+        font-weight: 600;
+      }
+      mat-icon {
+        color: #0d47a1;
+      }
+    }
+  }
+}
+
+/* === Contenido ========================================================= */
+mat-sidenav-content {
+  background: #fafafa;
+  padding: 16px 24px 24px 24px;
+}
+
+/* === Responsive ======================================================== */
+@media (max-width: 768px) {
+  .ListPersonali h1 {
+    display: none;
+  }
+  mat-sidenav {
+    width: 200px !important;
+  }
 }

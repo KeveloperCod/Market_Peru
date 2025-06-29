@@ -9,12 +9,14 @@ import { ResponseApi } from '../Interfaces/response-api';
   providedIn: 'root'
 })
 export class CategoriaService {
-  private urlApi:string= environment.endpoint + "Categoria/";
+  private urlApi:string= environment.endpoint + "categoria/";
 
   constructor(private http:HttpClient) { }
 
   lista():Observable<ResponseApi>{
     return this.http.get<ResponseApi>(`${this.urlApi}Lista`)
   }
+
+  
 
 }

@@ -69,15 +69,22 @@ export class VentaComponent implements OnInit {
       cantidad: ['', Validators.required]
     });
 
-    this._productoServicio.lista().subscribe({
-      next: (data) => {
-        if (data.status) {
-          const lista = data.value as Producto[];
-          this.listaProductos = lista.filter(p => p.esActivo == 1 && p.stock > 0);
-        }
-      },
-      error: () => { }
-    });
+    // …
+
+this._productoServicio.lista().subscribe({
+  next: (productos) => {
+    /* productos es Producto[] */
+    this.listaProductos = productos
+      .filter(p => p.esActivo === 1 && p.stock > 0);   // ajusta según tu tipo
+  },
+  error: () => {
+    this._utilidadServicio.mostrarAlerta(
+      'No se pudieron cargar los productos',
+      'Error'
+    );
+  }
+});
+
 
     this.forumularioProductoVenta.get('producto')?.valueChanges.subscribe(value => {
       this.listaProductoFiltro = this.retornarProductoPorFiltro(value);

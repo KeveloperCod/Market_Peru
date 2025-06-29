@@ -60,17 +60,18 @@ export class ProductoComponent implements OnInit, AfterViewInit {
     this.dataListaProductos.paginator = this.paginacionTabla;
   }
 
-  obtenerProductos() {
-    this._productoServicio.lista().subscribe({
-      next: (data) => {
-        if (data.status)
-          this.dataListaProductos.data = data.value;
-        else
-          this._utilidadServicio.mostrarAlerta("No se encontraron datos", "Oops!");
-      },
-      error: () => {}
-    });
-  }
+  // producto.component.ts  (solo el fragmento que obtiene datos)
+obtenerProductos() {
+  this._productoServicio.lista().subscribe({
+    next: (productos) => this.dataListaProductos.data = productos,
+    error: () => this._utilidadServicio.mostrarAlerta(
+                'No se pudieron cargar los productos', 'Error')
+  });
+}
+
+
+/* eliminarProducto() quedó igual: usa .eliminar(id) que devuelve ResponseApi */
+
 
   aplicarFiltroTabla(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
