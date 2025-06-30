@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 })
 export class MenuService {
 
-  private urlApi: string = environment.endpoint + 'Menu/';
+  private urlApi: string = environment.endpoint + 'menu/';
 
   constructor(private http: HttpClient) { }
 

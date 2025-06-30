@@ -1,5 +1,8 @@
 package com.cibertec.dto;
 
+import lombok.Data;
+
+@Data
 public class ProductoRequest {
 
 	   public String nombre;
@@ -7,7 +10,7 @@ public class ProductoRequest {
 	    public Integer stock;
 	    public Double precio;
 	
-	
+	    private Boolean esActivo;
 	
 	
 }

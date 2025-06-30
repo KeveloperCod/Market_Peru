@@ -1,15 +1,15 @@
 <mat-toolbar class="ListPersonali">
   <mat-toolbar-row>
-    <h1>Sistema Venta</h1>
+    <h1>Ventas DiTTO</h1>
+
+
     <button mat-icon-button (click)="sidenav.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
 
     <span style="flex: 1 1 auto"></span>
 
-    <label style="font-size: 14px; margin-right: 20px"
-      >{{ correoUsuario }} | {{ rolUsuario }}</label
-    >
+    <label style="font-size: 14px; margin-right: 20px">{{ correoUsuario }} | {{ rolUsuario }}</label>
 
     <button mat-icon-button (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>
@@ -18,13 +18,16 @@
 </mat-toolbar>
 
 <mat-sidenav-container>
-  <mat-sidenav #sidenav opened="true" mode="side" style="width: 200px">
+  <mat-sidenav #sidenav opened="true" mode="side">
     <mat-nav-list>
       <!--Menu -->
-      <mat-list-item *ngFor="let menu of listaMenus" [routerLink]="menu.url">
-        <mat-icon mat-list-icon>{{ menu.icono }}</mat-icon>
-        <div mat-line>{{ menu.nombre }}</div>
-      </mat-list-item>
+      <a mat-list-item *ngFor="let menu of listaMenus" [routerLink]="menu.url" routerLinkActive="active">
+        <mat-icon matListIcon> {{ menu.icono }} </mat-icon>
+        <span matLine> {{ menu.nombre }} </span>
+
+
+      </a>
+
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

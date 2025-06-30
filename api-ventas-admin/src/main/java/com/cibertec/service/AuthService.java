@@ -3,6 +3,7 @@ package com.cibertec.service;
 import com.cibertec.crosscutting.utils.JwtUtil;
 import com.cibertec.dto.LoginResponseDTO;
 import com.cibertec.dto.RegistroUsuarioDTO;
+import com.cibertec.dto.UsuarioDTO;
 import com.cibertec.model.Rol;
 import com.cibertec.model.Usuario;
 import com.cibertec.repository.RolRepository;
@@ -42,22 +43,34 @@ public class AuthService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public LoginResponseDTO authenticate(String email, String password){
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-        Authentication authResult = _authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+    public LoginResponseDTO authenticate(String email, String password) {
+
+        // 1) Autenticación estándar
+        UsernamePasswordAuthenticationToken authToken =
+            new UsernamePasswordAuthenticationToken(email, password);
+
+        Authentication authResult =
+            _authenticationManagerBuilder.getObject().authenticate(authToken);
+
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
+        // 2) Generamos el JWT
         String token = jwtUtil.getToken(authResult);
+
+        // 3) Obtenemos los datos del usuario
         Usuario usuario = usuarioRepository.findByCorreo(email);
 
-        return new LoginResponseDTO(
-                token,
-                usuario.getIdUsuario(),
-                usuario.getNombreCompleto(),
-                usuario.getCorreo(),
-                usuario.getRol()
-        );
+        UsuarioDTO usuarioDTO = UsuarioDTO.builder()
+                .idUsuario(usuario.getIdUsuario())
+                .nombreCompleto(usuario.getNombreCompleto())
+                .correo(usuario.getCorreo())
+                .rol(usuario.getRol())           // o usuario.getRol().getNombre()
+                .build();
+
+        // 4) Devolvemos token + objeto usuario
+        return new LoginResponseDTO(token, usuarioDTO);
     }
+
 
     public void registerUser(RegistroUsuarioDTO newUserDto){
         if(_userDetailsServiceImplement.existsByCorreo(newUserDto.getCorreo())){

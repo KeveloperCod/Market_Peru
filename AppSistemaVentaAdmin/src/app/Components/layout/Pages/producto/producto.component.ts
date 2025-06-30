@@ -19,6 +19,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ModalProductoComponent } from '../../Modales/modal-producto/modal-producto.component';
 
 import Swal from 'sweetalert2';
+import { ProductoConCategoria } from 'src/app/Interfaces/ProductosConCategoria';
 
 @Component({
   selector: 'app-producto',
@@ -41,7 +42,7 @@ import Swal from 'sweetalert2';
 export class ProductoComponent implements OnInit, AfterViewInit {
 
   columnasTabla: string[] = ['nombre', 'categoria', 'stock', 'precio', 'estado', 'acciones'];
-  dataInicio: Producto[] = [];
+  dataInicio: ProductoConCategoria[] = [];
   dataListaProductos = new MatTableDataSource(this.dataInicio);
 
   @ViewChild(MatPaginator) paginacionTabla!: MatPaginator;
@@ -60,22 +61,24 @@ export class ProductoComponent implements OnInit, AfterViewInit {
     this.dataListaProductos.paginator = this.paginacionTabla;
   }
 
-  obtenerProductos() {
-    this._productoServicio.lista().subscribe({
-      next: (data) => {
-        if (data.status)
-          this.dataListaProductos.data = data.value;
-        else
-          this._utilidadServicio.mostrarAlerta("No se encontraron datos", "Oops!");
-      },
-      error: () => {}
-    });
-  }
+  // producto.component.ts  (solo el fragmento que obtiene datos)
+obtenerProductos() {
+  this._productoServicio.listaConCategoria().subscribe({
+    next: (productos) => this.dataListaProductos.data = productos,
+    error: () => this._utilidadServicio.mostrarAlerta(
+                'No se pudieron cargar los productos', 'Error')
+  });
+}
+
+
+/* eliminarProducto() quedó igual: usa .eliminar(id) que devuelve ResponseApi */
+
 
   aplicarFiltroTabla(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataListaProductos.filter = filterValue.trim().toLocaleLowerCase();
   }
+
 
   nuevoProducto() {
     this.dialog.open(ModalProductoComponent, {
