@@ -134,36 +134,40 @@ export class VentaComponent implements OnInit {
   }
 
   registrarVenta() {
-    if (this.listaProductosParaVenta.length > 0) {
-      this.bloquearBotonRegistrar = true;
-      const request: Venta = {
-        tipoPago: this.tipoDePagoPordDefecto,
-        totalTexto: this.totalPagar.toFixed(2),
-        detalleVenta: this.listaProductosParaVenta
-      };
+  if (this.listaProductosParaVenta.length > 0) {
+    this.bloquearBotonRegistrar = true;
+    const request: Venta = {
+      tipoPago: this.tipoDePagoPordDefecto,
+      totalTexto: this.totalPagar.toFixed(2),
+      detalleVenta: this.listaProductosParaVenta
+    };
 
-      this._ventaServicio.registrar(request).subscribe({
-        next: (response) => {
-          if (response.status) {
-            this.totalPagar = 0.00;
-            this.listaProductosParaVenta = [];
-            this.datosDetalleVenta = new MatTableDataSource(this.listaProductosParaVenta);
+    this._ventaServicio.registrar(request).subscribe({
+      next: (response) => {
+        if (response.status) {
+          this.totalPagar = 0.00;
+          this.listaProductosParaVenta = [];
+          this.datosDetalleVenta = new MatTableDataSource(this.listaProductosParaVenta);
 
-            Swal.fire({
-              icon: 'success',
-              title: 'Venta Registrada!',
-              text: `Numero de Venta: ${response.value.numeroDocumento}`
-            });
-          } else {
-            this._utilidadServicio.mostrarAlerta("No se pudo registrar la venta", "Oopss!");
-          }
-        },
-        complete: () => {
-          this.bloquearBotonRegistrar = false;
-        },
-        error: () => {}
-      });
-    }
+          Swal.fire({
+            icon: 'success',
+            title: 'Venta Registrada!',
+            text: `Numero de Venta: ${response.value.numeroDocumento}`
+          });
+        } else {
+          this._utilidadServicio.mostrarAlerta("No se pudo registrar la venta", "Oopss!");
+        }
+      },
+      complete: () => {
+        this.bloquearBotonRegistrar = false;
+      },
+      error: (err) => {
+        console.error('Error al registrar la venta:', err);
+        this._utilidadServicio.mostrarAlerta("Hubo un error al registrar la venta", "Error");
+      }
+    });
   }
+}
+
 
 }
