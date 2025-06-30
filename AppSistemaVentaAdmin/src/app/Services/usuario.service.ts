@@ -29,7 +29,7 @@ lista(): Observable<Usuario[]> {
   }
 
   editar(request: Usuario):Observable<ResponseApi>{
-    return this.http.put<ResponseApi>(`${this.urlApi}Editar`,request)
+    return this.http.put<ResponseApi>(`${this.urlApi}actualizar`,request)
   }
 
   eliminar(id: number): Observable<ResponseApi> {
