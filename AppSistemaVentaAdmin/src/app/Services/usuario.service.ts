@@ -16,6 +16,8 @@ export class UsuarioService {
   private urlApi:string= environment.endpoint + "usuarios/";
 
   constructor(private http:HttpClient) { }
+   // Método para obtener el token
+
 
 IniciarSesion(request: Login): Observable<LoginResponse> {
   return this.http.post<LoginResponse>("http://localhost:8080/auth/login", request);
