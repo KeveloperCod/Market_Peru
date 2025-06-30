@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@PreAuthorize("hasRole('ADMIN')")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -19,41 +20,28 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/listar")
-    public ResponseEntity<List<Usuario>> listar() {
-        return ResponseEntity.ok(usuarioService.listarUsuarios());
+    public List<Usuario> listar() {
+        return usuarioService.listarUsuarios();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/listar-con-rol")
-    public ResponseEntity<List<UsuarioDTO>> listarUsuariosConRol() {
-        return ResponseEntity.ok(usuarioService.listarUsuariosConRol());
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/registrar")
-    public ResponseEntity<Usuario> registrarUsuario(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioService.registrarUsuarioConEncriptacion(usuario));
+    public Usuario registrar(@RequestBody Usuario usuario) {
+        return usuarioService.registrarUsuarioConEncriptacion(usuario);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    /**  actualizar sin perder la contraseña  */
     @PutMapping("/actualizar")
-    public ResponseEntity<Usuario> actualizarUsuario(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioService.actualizarUsuario(usuario));
+    public Usuario actualizar(@RequestBody Usuario usuario) {
+        return usuarioService.actualizarUsuario(usuario);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable int id) {
-        usuarioService.eliminarUsuarioPorId(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable int id) {
-        Usuario usuario = usuarioService.buscarUsuarioPorId(id);
-        return usuario != null ? ResponseEntity.ok(usuario) : ResponseEntity.notFound().build();
+    /**  eliminación lógica opcional  */
+    @PutMapping("/desactivar/{id}")
+    public void desactivar(@PathVariable int id) {
+        Usuario u = usuarioService.buscarUsuarioPorId(id);
+        if (u == null) throw new RuntimeException("No existe usuario");
+        u.setEsActivo(false);
+        usuarioService.actualizarUsuario(u);
     }
 }

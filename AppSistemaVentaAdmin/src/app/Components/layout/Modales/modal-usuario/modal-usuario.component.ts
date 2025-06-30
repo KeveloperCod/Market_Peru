@@ -16,10 +16,10 @@ import { UsuarioService } from 'src/app/Services/usuario.service';
 import { UtilidadService } from 'src/app/Reutilizable/utilidad.service';
 
 @Component({
-  selector: 'app-modal-usuario',
-  standalone: true,
-  templateUrl: './modal-usuario.component.html',
-  styleUrls: ['./modal-usuario.component.css'],
+  selector    : 'app-modal-usuario',
+  standalone  : true,
+  templateUrl : './modal-usuario.component.html',
+  styleUrls   : ['./modal-usuario.component.css'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -34,92 +34,89 @@ import { UtilidadService } from 'src/app/Reutilizable/utilidad.service';
 })
 export class ModalUsuarioComponent implements OnInit {
 
-  formularioUsuario: FormGroup;
-  ocultarPassword: boolean = true;
-  tituloAccion: string = "Agregar";
-  botonAccion: string = "Guardar";
+  formularioUsuario!: FormGroup;
+  ocultarPassword  = true;
+  tituloAccion     = 'Agregar';
+  botonAccion      = 'Guardar';
   listaRoles: Rol[] = [];
 
   constructor(
-    private modalActual: MatDialogRef<ModalUsuarioComponent>,
-    @Inject(MAT_DIALOG_DATA) public datosUsuario: Usuario,
-    private fb: FormBuilder,
-    private _rolServicio: RolService,
-    private _usuarioServicio: UsuarioService,
-    private _utilidadServicio: UtilidadService
+    private dialogRef   : MatDialogRef<ModalUsuarioComponent>,
+    @Inject(MAT_DIALOG_DATA) public datosUsuario: Usuario | null,
+    private fb            : FormBuilder,
+    private rolSrv        : RolService,
+    private usuarioSrv    : UsuarioService,
+    private utilidadSrv   : UtilidadService
   ) {
     this.formularioUsuario = this.fb.group({
-      nombreCompleto: ['', Validators.required],
-      correo: ['', Validators.required],
-      idRol: ['', Validators.required],
-      clave: ['', Validators.required],
-      esActivo: ['1', Validators.required],
+      nombreCompleto : ['', Validators.required],
+      correo         : ['', Validators.required],
+      idRol          : ['', Validators.required],
+      clave          : [''],
+      esActivo       : ['1', Validators.required]
     });
 
-    if (this.datosUsuario != null) {
-      this.tituloAccion = "Editar";
-      this.botonAccion = "Actualizar";
-    }
+    if (this.datosUsuario) {
+      this.tituloAccion = 'Editar';
+      this.botonAccion  = 'Actualizar';
 
-    this._rolServicio.lista().subscribe({
-      next: (data) => {
-        if (data.status) this.listaRoles = data.value;
-      },
-      error: (e) => { }
-    });
-  }
-
-  ngOnInit(): void {
-    if (this.datosUsuario != null) {
       this.formularioUsuario.patchValue({
         nombreCompleto: this.datosUsuario.nombreCompleto,
-        correo: this.datosUsuario.correo,
-        idRol: this.datosUsuario.rol.idRol,
-        clave: this.datosUsuario.clave,
-        esActivo: this.datosUsuario.esActivo ? '1' : '0',
+        correo        : this.datosUsuario.correo
       });
     }
   }
 
-  guardarEditar_Usuario() {
-    const _usuario: Usuario = {
-      idUsuario: this.datosUsuario == null ? 0 : this.datosUsuario.idUsuario,
+  ngOnInit(): void {
+    this.rolSrv.lista().subscribe({
+      next: (data) => {
+        this.listaRoles = data;
+
+        if (this.datosUsuario) {
+          this.formularioUsuario.patchValue({
+            idRol   : this.datosUsuario.rol.idRol,
+            esActivo: this.datosUsuario.esActivo ? '1' : '0'
+          });
+        }
+      },
+      error: () => {
+        this.utilidadSrv.mostrarAlerta('Error al cargar roles', 'Error');
+      }
+    });
+  }
+
+  guardarEditar_Usuario(): void {
+    const claveValor = (this.formularioUsuario.value.clave || '').trim();
+
+    const dto: Usuario = {
+      idUsuario     : this.datosUsuario ? this.datosUsuario.idUsuario : 0,
       nombreCompleto: this.formularioUsuario.value.nombreCompleto,
-      correo: this.formularioUsuario.value.correo,
-      clave: this.formularioUsuario.value.clave,
-      esActivo: this.formularioUsuario.value.esActivo === '1',
-      fechaRegistro: '',
-      rol: {
-        idRol: this.formularioUsuario.value.idRol,
-        nombre: '',
+      correo        : this.formularioUsuario.value.correo,
+      clave         : claveValor === '' ? null : claveValor,
+      esActivo      : this.formularioUsuario.value.esActivo === '1',
+      fechaRegistro : '',
+      rol           : {
+        idRol        : this.formularioUsuario.value.idRol,
+        nombre       : '',
         fechaRegistro: ''
       }
     };
 
-    if (this.datosUsuario == null) {
-      this._usuarioServicio.guardar(_usuario).subscribe({
-        next: (data) => {
-          if (data.status) {
-            this._utilidadServicio.mostrarAlerta("Usuario registrado correctamente", "Éxito");
-            this.modalActual.close("true");
-          } else {
-            this._utilidadServicio.mostrarAlerta("No se pudo registrar el usuario", "Error");
-          }
-        },
-        error: (e) => { }
-      });
-    } else {
-      this._usuarioServicio.editar(_usuario).subscribe({
-        next: (data) => {
-          if (data.status) {
-            this._utilidadServicio.mostrarAlerta("Usuario editado correctamente", "Éxito");
-            this.modalActual.close("true");
-          } else {
-            this._utilidadServicio.mostrarAlerta("No se pudo editar el usuario", "Error");
-          }
-        },
-        error: (e) => { }
-      });
-    }
+    const obs$ = this.datosUsuario
+      ? this.usuarioSrv.editar(dto)
+      : this.usuarioSrv.guardar(dto);
+
+    obs$.subscribe({
+      next : (data) => {
+        if (data.status) {
+          const msg = this.datosUsuario ? 'Usuario editado' : 'Usuario registrado';
+          this.utilidadSrv.mostrarAlerta(`${msg} correctamente`, 'Éxito');
+          this.dialogRef.close('true');
+        } else {
+          this.utilidadSrv.mostrarAlerta(data.msg ?? 'Operación fallida', 'Error');
+        }
+      },
+      error: () => this.utilidadSrv.mostrarAlerta('Error de servidor', 'Error')
+    });
   }
 }

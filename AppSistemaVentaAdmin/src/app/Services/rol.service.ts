@@ -1,22 +1,19 @@
 import { Injectable } from '@angular/core';
-
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 import { environment } from 'src/environments/environment';
-import { ResponseApi } from '../Interfaces/response-api';
+import { Rol } from '../Interfaces/rol';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RolService {
 
-  private urlApi:string= environment.endpoint + "Rol/";
+  private urlApi: string = environment.endpoint + "roles/";
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-  lista():Observable<ResponseApi>{
-    return this.http.get<ResponseApi>(`${this.urlApi}Lista`)
+  lista(): Observable<Rol[]> {
+    return this.http.get<Rol[]>(`${this.urlApi}listar`);
   }
-
-  
 }

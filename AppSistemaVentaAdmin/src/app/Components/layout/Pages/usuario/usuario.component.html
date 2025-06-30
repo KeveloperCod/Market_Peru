@@ -30,7 +30,7 @@
         <ng-container matColumnDef="rol">
           <th mat-header-cell *matHeaderCellDef>Rol</th>
           <td mat-cell *matCellDef="let element">
-            {{ element.rolDescripcion }}
+            {{ element.rol?.nombre }}
           </td>
         </ng-container>
         <ng-container matColumnDef="estado">

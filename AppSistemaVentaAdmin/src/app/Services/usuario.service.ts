@@ -16,8 +16,6 @@ export class UsuarioService {
   private urlApi:string= environment.endpoint + "usuarios/";
 
   constructor(private http:HttpClient) { }
-   // Método para obtener el token
-
 
 IniciarSesion(request: Login): Observable<LoginResponse> {
   return this.http.post<LoginResponse>("http://localhost:8080/auth/login", request);
@@ -34,8 +32,9 @@ lista(): Observable<Usuario[]> {
     return this.http.put<ResponseApi>(`${this.urlApi}Editar`,request)
   }
 
-  eliminar(id: number):Observable<ResponseApi>{
-    return this.http.delete<ResponseApi>(`${this.urlApi}Eliminar/${id}`)
-  }
+  eliminar(id: number): Observable<ResponseApi> {
+  return this.http.put<ResponseApi>(`${this.urlApi}desactivar/${id}`, {});
+}
+
 
 }

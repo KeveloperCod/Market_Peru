@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
+import com.cibertec.mapper.RolMapper;
 @Service
 public class AuthService {
 
@@ -64,7 +64,7 @@ public class AuthService {
                 .idUsuario(usuario.getIdUsuario())
                 .nombreCompleto(usuario.getNombreCompleto())
                 .correo(usuario.getCorreo())
-                .rol(usuario.getRol())           // o usuario.getRol().getNombre()
+                .rol(RolMapper.toDTO(usuario.getRol()))           // o usuario.getRol().getNombre()
                 .build();
 
         // 4) Devolvemos token + objeto usuario

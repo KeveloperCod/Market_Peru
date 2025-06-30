@@ -1,31 +1,23 @@
 package com.cibertec.dto;
 
-import java.util.Date;
-
-import com.cibertec.model.Rol;
-
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsuarioDTO {
+    private Integer idUsuario;
+    private String nombreCompleto;
+    private String correo;
+    private RolDTO rol; 
+    private Boolean esActivo;
+    private String clave;
 
-	
-	private Integer idUsuario;
-	    private String nombreCompleto;
-	    private String correo;
-	    private Rol rol;
-		public UsuarioDTO(Integer idUsuario, String nombreCompleto, String correo, Rol rol) {
-			super();
-			this.idUsuario = idUsuario;
-			this.nombreCompleto = nombreCompleto;
-			this.correo = correo;
-			this.rol = rol;
-		}
-		public UsuarioDTO(Object[] row) {
-			// TODO Auto-generated constructor stub
-		} 
+    public UsuarioDTO(Object[] row) {
 
-
-	
+    }
 }
