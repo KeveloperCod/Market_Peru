@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Producto } from '../Interfaces/producto';
 import { ResponseApi } from '../Interfaces/response-api';
+import { ProductoConCategoria } from '../Interfaces/ProductosConCategoria';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,10 @@ export class ProductoService {
   lista(): Observable<Producto[]> {
     return this.http.get<Producto[]>(`${this.urlApi}listar`);
   }
+  listaConCategoria(): Observable<ProductoConCategoria[]> {
+  return this.http.get<ProductoConCategoria[]>(`${this.urlApi}listar-con-categoria`);
+}
+
 
   /** POST /api/productos/registrar  →  ResponseApi con msg/estado */
   guardar(request: Producto): Observable<ResponseApi> {

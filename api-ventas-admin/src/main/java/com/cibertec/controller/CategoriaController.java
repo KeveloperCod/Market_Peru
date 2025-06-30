@@ -1,6 +1,7 @@
 package com.cibertec.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +25,18 @@ public class CategoriaController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<Categoria>> listarCategorias() {
+    public ResponseEntity<?> listarCategorias() {
         try {
             List<Categoria> categorias = categoriaService.listarCategorias();
-            return ResponseEntity.ok(categorias);
+            return ResponseEntity.ok(Map.of(
+                "status", true,
+                "value", categorias
+            ));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.ok(Map.of(
+                "status", false,
+                "msg", "Error al listar categorías"
+            ));
         }
     }
 

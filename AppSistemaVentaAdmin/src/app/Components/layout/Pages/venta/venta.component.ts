@@ -16,9 +16,9 @@ import { ProductoService } from 'src/app/Services/producto.service';
 import { VentaService } from 'src/app/Services/venta.service';
 import { UtilidadService } from 'src/app/Reutilizable/utilidad.service';
 
-import { Producto } from 'src/app/Interfaces/producto';
 import { Venta } from 'src/app/Interfaces/venta';
 import { DetalleVenta } from 'src/app/Interfaces/detalle-venta';
+import { ProductoConCategoria } from 'src/app/Interfaces/ProductosConCategoria';
 
 import { MatTableDataSource } from '@angular/material/table';
 import Swal from 'sweetalert2';
@@ -45,12 +45,12 @@ import Swal from 'sweetalert2';
 })
 export class VentaComponent implements OnInit {
 
-  listaProductos: Producto[] = [];
-  listaProductoFiltro: Producto[] = [];
+  listaProductos: ProductoConCategoria[] = [];
+  listaProductoFiltro: ProductoConCategoria[] = [];
   listaProductosParaVenta: DetalleVenta[] = [];
   bloquearBotonRegistrar: boolean = false;
 
-  productoSeleccionado!: Producto;
+  productoSeleccionado!: ProductoConCategoria;
   tipoDePagoPordDefecto: string = "Efectivo";
   totalPagar: number = 0;
 
@@ -69,37 +69,34 @@ export class VentaComponent implements OnInit {
       cantidad: ['', Validators.required]
     });
 
-    // …
-
-this._productoServicio.lista().subscribe({
-  next: (productos) => {
-    /* productos es Producto[] */
-    this.listaProductos = productos
-      .filter(p => p.esActivo === 1 && p.stock > 0);   // ajusta según tu tipo
-  },
-  error: () => {
-    this._utilidadServicio.mostrarAlerta(
-      'No se pudieron cargar los productos',
-      'Error'
-    );
-  }
-});
-
+    this._productoServicio.listaConCategoria().subscribe({
+      next: (productos) => {
+        console.log('Productos con categoría cargados', productos);
+        this.listaProductos = productos.filter(p => p.esActivo && p.stock > 0);
+      },
+      error: (e) => {
+        console.log('Error al cargar productos con categoría', e);
+      }
+    });
 
     this.forumularioProductoVenta.get('producto')?.valueChanges.subscribe(value => {
       this.listaProductoFiltro = this.retornarProductoPorFiltro(value);
     });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
-  retornarProductoPorFiltro(busqueda: any): Producto[] {
-    const valorBuscado = typeof busqueda === "string" ? busqueda.toLowerCase() : busqueda.nombre.toLowerCase();
-    return this.listaProductos.filter(item => item.nombre.toLowerCase().includes(valorBuscado));
+  retornarProductoPorFiltro(busqueda: any): ProductoConCategoria[] {
+    const valorBuscado = typeof busqueda === "string"
+      ? busqueda.toLowerCase()
+      : busqueda.nombreProducto.toLowerCase();
+    return this.listaProductos.filter(item =>
+      item.nombreProducto.toLowerCase().includes(valorBuscado)
+    );
   }
 
-  mostrarProducto(producto: Producto) {
-    return producto.nombre;
+  mostrarProducto(producto: ProductoConCategoria): string {
+    return producto?.nombreProducto ?? '';
   }
 
   productoParaVenta(event: any) {
@@ -108,16 +105,16 @@ this._productoServicio.lista().subscribe({
 
   agregarProductoParaVenta() {
     const _cantidad: number = this.forumularioProductoVenta.value.cantidad;
-    const _precio: number = parseFloat(this.productoSeleccionado.precio);
+    const _precio: number = this.productoSeleccionado.precio;
     const _total: number = _cantidad * _precio;
     this.totalPagar += _total;
 
     this.listaProductosParaVenta.push({
       idProducto: this.productoSeleccionado.idProducto,
-      descripcionProducto: this.productoSeleccionado.nombre,
+      descripcionProducto: this.productoSeleccionado.nombreProducto,
       cantidad: _cantidad,
-      precioTexto: String(_precio.toFixed(2)),
-      totalTexto: String(_total.toFixed(2)),
+      precioTexto: _precio.toFixed(2),
+      totalTexto: _total.toFixed(2),
     });
 
     this.datosDetalleVenta = new MatTableDataSource(this.listaProductosParaVenta);
@@ -130,7 +127,9 @@ this._productoServicio.lista().subscribe({
 
   eliminarProducto(detalle: DetalleVenta) {
     this.totalPagar -= parseFloat(detalle.totalTexto);
-    this.listaProductosParaVenta = this.listaProductosParaVenta.filter(f => f.idProducto != detalle.idProducto);
+    this.listaProductosParaVenta = this.listaProductosParaVenta.filter(
+      f => f.idProducto !== detalle.idProducto
+    );
     this.datosDetalleVenta = new MatTableDataSource(this.listaProductosParaVenta);
   }
 
@@ -139,7 +138,7 @@ this._productoServicio.lista().subscribe({
       this.bloquearBotonRegistrar = true;
       const request: Venta = {
         tipoPago: this.tipoDePagoPordDefecto,
-        totalTexto: String(this.totalPagar.toFixed(2)),
+        totalTexto: this.totalPagar.toFixed(2),
         detalleVenta: this.listaProductosParaVenta
       };
 
@@ -162,7 +161,7 @@ this._productoServicio.lista().subscribe({
         complete: () => {
           this.bloquearBotonRegistrar = false;
         },
-        error: () => { }
+        error: () => {}
       });
     }
   }
