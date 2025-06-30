@@ -8,6 +8,7 @@ import com.cibertec.repository.ProductoRepository;
 import com.cibertec.service.ProductoService;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.StoredProcedureQuery;
 
@@ -89,12 +90,13 @@ public class ProductoServiceImpl implements ProductoService {
 	    query.registerStoredProcedureParameter("p_idCategoria", Integer.class, jakarta.persistence.ParameterMode.IN);
 	    query.registerStoredProcedureParameter("p_stock", Integer.class, jakarta.persistence.ParameterMode.IN);
 	    query.registerStoredProcedureParameter("p_precio", Double.class, jakarta.persistence.ParameterMode.IN);
+	    query.registerStoredProcedureParameter("p_esActivo", Integer.class, ParameterMode.IN);
 
 	    query.setParameter("p_nombre", producto.nombre);
 	    query.setParameter("p_idCategoria", producto.idCategoria);
 	    query.setParameter("p_stock", producto.stock);
 	    query.setParameter("p_precio", producto.precio);
-
+	    query.setParameter("p_esActivo", producto.esActivo);
 	    query.execute();
 	}
 
@@ -106,12 +108,16 @@ public class ProductoServiceImpl implements ProductoService {
 	    query.registerStoredProcedureParameter("p_idCategoria", Integer.class, jakarta.persistence.ParameterMode.IN);
 	    query.registerStoredProcedureParameter("p_stock", Integer.class, jakarta.persistence.ParameterMode.IN);
 	    query.registerStoredProcedureParameter("p_precio", Double.class, jakarta.persistence.ParameterMode.IN);
+	    query.registerStoredProcedureParameter("p_esActivo", Integer.class, ParameterMode.IN);
+	    
 
 	    query.setParameter("p_idProducto", idProducto);
 	    query.setParameter("p_nombre", producto.nombre);
 	    query.setParameter("p_idCategoria", producto.idCategoria);
 	    query.setParameter("p_stock", producto.stock);
 	    query.setParameter("p_precio", producto.precio);
+	    query.setParameter("p_esActivo", producto.esActivo);
+
 
 	    query.execute();
 	}

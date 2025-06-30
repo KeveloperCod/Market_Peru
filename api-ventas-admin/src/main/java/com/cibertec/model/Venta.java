@@ -2,6 +2,7 @@ package com.cibertec.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,4 +28,9 @@ public class Venta {
 
     @Column(name = "fechaRegistro")
     private LocalDateTime fechaRegistro;
+    
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetalleVenta> detalleVenta;
+
+    
 }

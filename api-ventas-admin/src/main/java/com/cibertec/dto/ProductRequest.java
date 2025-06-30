@@ -6,6 +6,7 @@ public class ProductRequest {
     public Integer idCategoria;
     public Integer stock;
     public double precio;
+	public Object esActivo;
 	
 	
 	
