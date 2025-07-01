@@ -17,7 +17,7 @@ services:
       - app_network
 
   frontend:
-    image: AppSistemaVentaAdmin:latest
+    image: appsistemaventaadmin:latest
     build: ./AppSistemaVentaAdmin
     container_name: app-front
     ports:

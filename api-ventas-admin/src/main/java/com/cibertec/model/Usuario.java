@@ -7,7 +7,7 @@ import lombok.*;
 
 @Data
 @Entity
-@Table(name = "usuario")
+@Table(name = "Usuario")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder // ✅ AGREGADO
