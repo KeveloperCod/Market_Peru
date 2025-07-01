@@ -1,3 +1,6 @@
+/* =================================================================
+ * src/app/Components/layout/Pages/venta/venta.component.ts
+ * ================================================================= */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -110,20 +113,24 @@ export class VentaComponent implements OnInit {
     const cantidad = +this.formularioProductoVenta.value.cantidad;
     if (!this.productoSeleccionado || cantidad <= 0) { return; }
 
-    const existente = this.listaProductosParaVenta.find(d => d.idProducto === this.productoSeleccionado!.idProducto);
+    const existente = this.listaProductosParaVenta
+      .find(d => d.idProducto === this.productoSeleccionado!.idProducto);
 
     if (existente) {
       existente.cantidad += cantidad;
-      const precioUnit = parseFloat(existente.precioTexto);
-      existente.totalTexto = (precioUnit * existente.cantidad).toFixed(2);
+      existente.total = existente.cantidad * existente.precio;
+      existente.totalTexto = existente.total.toFixed(2);
     } else {
-      const precio = this.productoSeleccionado!.precio;
-      const total  = cantidad * precio;
+      const precioUnit = this.productoSeleccionado!.precio;
+      const total = cantidad * precioUnit;
+
       this.listaProductosParaVenta.push({
         idProducto: this.productoSeleccionado!.idProducto,
         descripcionProducto: this.productoSeleccionado!.nombreProducto,
         cantidad,
-        precioTexto: precio.toFixed(2),
+        precio: precioUnit,
+        total,
+        precioTexto: precioUnit.toFixed(2),
         totalTexto: total.toFixed(2)
       });
     }
@@ -138,7 +145,8 @@ export class VentaComponent implements OnInit {
   /* ---------- Eliminar producto ---------- */
 
   eliminarProducto(det: DetalleVenta) {
-    this.listaProductosParaVenta = this.listaProductosParaVenta.filter(d => d.idProducto !== det.idProducto);
+    this.listaProductosParaVenta =
+      this.listaProductosParaVenta.filter(d => d.idProducto !== det.idProducto);
     this.actualizarTablaYTotal();
   }
 
@@ -151,12 +159,12 @@ export class VentaComponent implements OnInit {
     const detalleParaApi: DetalleVentaRequest[] = this.listaProductosParaVenta.map(d => ({
       producto: { idProducto: d.idProducto },
       cantidad: d.cantidad,
-      precio: parseFloat(d.precioTexto)
+      precio  : d.precio
     }));
 
     const request: Venta = {
-      tipoPago: this.tipoDePagoPorDefecto,
-      totalTexto: this.totalPagar.toFixed(2),
+      tipoPago   : this.tipoDePagoPorDefecto,
+      totalTexto : this.totalPagar.toFixed(2),
       detalleVenta: detalleParaApi as any
     };
 
@@ -164,9 +172,9 @@ export class VentaComponent implements OnInit {
       next: (dto: VentaResponseDTO) => {
         this.bloquearBotonRegistrar = false;
         Swal.fire({
-          icon: 'success',
+          icon : 'success',
           title: 'Venta Registrada',
-          text: `Número de Venta: ${dto.numeroDocumento}`
+          text : `Número de Venta: ${dto.numeroDocumento}`
         });
 
         /* limpiar todo */
@@ -186,6 +194,6 @@ export class VentaComponent implements OnInit {
   private actualizarTablaYTotal() {
     this.datosDetalleVenta.data = [...this.listaProductosParaVenta];
     this.totalPagar = this.listaProductosParaVenta
-      .reduce((acc, d) => acc + parseFloat(d.totalTexto), 0);
+      .reduce((acc, d) => acc + d.total, 0);
   }
 }

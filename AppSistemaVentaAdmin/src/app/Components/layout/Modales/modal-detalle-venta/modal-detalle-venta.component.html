@@ -1,7 +1,11 @@
+<!-- =================================================================
+     src/app/Components/layout/Modales/modal-detalle-venta/
+     modal-detalle-venta.component.html
+     ================================================================= -->
 <h2 mat-dialog-title>Detalle Venta</h2>
 
 <mat-dialog-content>
-  <!-- Cabecera con datos generales -->
+  <!-- CABECERA -->
   <mat-grid-list cols="4" rowHeight="70px" gutterSize="10px">
     <mat-grid-tile>
       <mat-form-field appearance="fill" style="width: 100%">
@@ -32,7 +36,7 @@
     </mat-grid-tile>
   </mat-grid-list>
 
-  <!-- Tabla de productos -->
+  <!-- TABLA DE PRODUCTOS -->
   <h3 style="margin-top: 15px">Lista de Productos</h3>
 
   <table
@@ -56,13 +60,13 @@
     <!-- Precio -->
     <ng-container matColumnDef="precioTexto">
       <th mat-header-cell *matHeaderCellDef>Precio</th>
-      <td mat-cell *matCellDef="let e">{{ e.precioTexto }}</td>
+      <td mat-cell *matCellDef="let e">S/ {{ e.precioTexto }}</td>
     </ng-container>
 
     <!-- Total -->
     <ng-container matColumnDef="totalTexto">
       <th mat-header-cell *matHeaderCellDef>Total</th>
-      <td mat-cell *matCellDef="let e">{{ e.totalTexto }}</td>
+      <td mat-cell *matCellDef="let e">S/ {{ e.totalTexto }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>

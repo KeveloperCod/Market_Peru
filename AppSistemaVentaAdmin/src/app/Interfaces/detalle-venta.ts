@@ -1,7 +1,15 @@
+/* src/app/Interfaces/detalle-venta.ts */
 export interface DetalleVenta {
-    idProducto:number,
-    descripcionProducto:string,
-    cantidad:number,
-    precioTexto:string,
-    totalTexto:string
+  /* === datos provenientes del backend === */
+  idProducto: number;                               //  🔸  repuesto
+  producto?: { idProducto: number; nombre: string };
+
+  cantidad: number;
+  precio: number;
+  total: number;
+
+  /* === campos formateados para la vista === */
+  descripcionProducto: string;                      //  ahora no opcional
+  precioTexto: string;
+  totalTexto: string;
 }
