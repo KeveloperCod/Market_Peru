@@ -13,97 +13,87 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class VentaServiceImpl implements VentaService {
 
-    private static final Logger logger = LoggerFactory
-    		.getLogger(VentaServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(VentaServiceImpl.class);
 
     @Autowired
     private VentaRepository ventaRepository;
 
     @Autowired
     private ProductoRepository productoRepository;
-    
+
     @Override
     public Venta registrarVenta(Venta venta) {
-        logger.info("Verificando los detalles de la venta...");
-        
-        // Verificamos si los detalles de la venta están presentes
+
+        logger.info("Verificando los detalles de la venta…");
+
         if (venta.getDetalleVenta() == null || venta.getDetalleVenta().isEmpty()) {
             logger.error("Los detalles de la venta no fueron proporcionados.");
             throw new RuntimeException("Los detalles de la venta no fueron proporcionados.");
         }
 
-        // Listamos los ID de los productos en la venta para evitar consultas repetidas
         List<Integer> productIds = venta.getDetalleVenta().stream()
-                .map(detalle -> detalle.getProducto() != null ? detalle.getProducto().getIdProducto() : null)
-                .collect(Collectors.toList());
+            .filter(det -> det.getProducto() != null)
+            .map(det -> det.getProducto().getIdProducto())
+            .distinct()
+            .collect(Collectors.toList());
 
-        // Asegúrate de que el arreglo de IDs no esté vacío ni contenga valores nulos
-        if (productIds.contains(null) || productIds.isEmpty()) {
-            logger.error("Algunos productos tienen ID nulo o no se proporcionaron productos.");
-            throw new RuntimeException("Algunos productos tienen ID nulo o no se proporcionaron productos.");
+        if (productIds.isEmpty()) {
+            logger.error("No se proporcionaron productos válidos en los detalles de la venta.");
+            throw new RuntimeException("No se proporcionaron productos válidos en los detalles de la venta.");
         }
 
-        // Convierte la lista de IDs en una cadena separada por comas
-        String productIdsStr = productIds.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
-        
-        logger.info("IDs de productos en venta: {}", productIdsStr);
+        String idsStr = productIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        logger.info("IDs de productos en venta: {}", idsStr);
 
-        // Usamos la consulta personalizada para obtener los productos de la base de datos
-        List<Producto> productos = productoRepository.findProductosByIds(productIdsStr); // Asegúrate de que este método reciba el string correctamente
+        List<Producto> productos = productoRepository.findProductosByIds(idsStr);
 
         if (productos.size() != productIds.size()) {
             logger.error("Algunos productos no se encuentran en la base de datos.");
             throw new RuntimeException("Algunos productos no se encuentran en la base de datos.");
         }
 
-        // Asignamos el producto correspondiente a cada detalle de la venta
         for (DetalleVenta detalle : venta.getDetalleVenta()) {
             logger.info("Procesando detalle de venta con producto ID: {}", detalle.getProducto().getIdProducto());
+
             Producto producto = productos.stream()
                 .filter(p -> p.getIdProducto() == detalle.getProducto().getIdProducto())
                 .findFirst()
-                .orElseThrow(() -> {
-                    logger.error("Producto con ID {} no encontrado.", detalle.getProducto().getIdProducto());
-                    return new RuntimeException("Producto con ID " + detalle.getProducto().getIdProducto() + " no encontrado.");
-                });
+                .orElseThrow(() -> new RuntimeException("Producto con ID "
+                        + detalle.getProducto().getIdProducto() + " no encontrado."));
 
             if (!producto.isEsActivo()) {
-                logger.error("Producto con ID {} está inactivo.", detalle.getProducto().getIdProducto());
-                throw new RuntimeException("Producto con ID " + detalle.getProducto().getIdProducto() + " está inactivo.");
+                logger.error("Producto con ID {} está inactivo.", producto.getIdProducto());
+                throw new RuntimeException("Producto con ID " + producto.getIdProducto() + " está inactivo.");
             }
 
             detalle.setProducto(producto);
-            detalle.setVenta(venta);  // Asociamos el detalle a la venta
+            detalle.setVenta(venta);
 
-            // Calculamos el total del detalle
-            BigDecimal totalDetalle = detalle.getPrecio().multiply(new BigDecimal(detalle.getCantidad()));
+            BigDecimal totalDetalle = detalle.getPrecio().multiply(BigDecimal.valueOf(detalle.getCantidad()));
             detalle.setTotal(totalDetalle);
-            logger.info("Detalle de venta actualizado: Producto ID: {}, Total: {}", detalle.getProducto().getIdProducto(), totalDetalle);
 
-            // Aseguramos que el detalle se agregue a la lista de detalles de la venta
-            venta.addDetalleVenta(detalle);
-        } 
+            logger.info("Detalle actualizado (Producto {}, Total {})", producto.getIdProducto(), totalDetalle);
+        }
 
-        // Calculamos el total de la venta
         BigDecimal totalVenta = venta.getDetalleVenta().stream()
-                .map(DetalleVenta::getTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        venta.setTotal(totalVenta);
-        logger.info("Total de la venta calculado: {}", totalVenta);
+            .map(DetalleVenta::getTotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Guardamos la venta en la base de datos
+        venta.setTotal(totalVenta);
+        venta.setFechaRegistro(LocalDateTime.now()); // ⬅️ REGISTRA FECHA Y HORA DE LA VENTA
+
+        logger.info("Total de la venta calculado: {}", totalVenta);
+        logger.info("Fecha de la venta: {}", venta.getFechaRegistro());
+
         return ventaRepository.save(venta);
     }
-
-
 
     @Override
     public List<Venta> getAllVentas() {

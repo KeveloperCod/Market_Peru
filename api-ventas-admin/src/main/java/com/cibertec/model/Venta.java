@@ -3,6 +3,7 @@ package com.cibertec.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;   // <<-- nuevo
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import lombok.Data;
 @Data
 @Table(name = "Venta")
 public class Venta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idVenta")
@@ -27,17 +29,13 @@ public class Venta {
     @Column(name = "fechaRegistro")
     private LocalDateTime fechaRegistro;
 
-    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference 
+    @OneToMany(mappedBy = "venta",
+               cascade = CascadeType.ALL,
+               orphanRemoval = true,
+               fetch = FetchType.EAGER)
     private List<DetalleVenta> detalleVenta;
 
-    public List<DetalleVenta> getDetalleVenta() {
-        return detalleVenta;
-    }
-
-
-    // Método para agregar un detalle a la venta
-    public void addDetalleVenta(DetalleVenta detalleVenta) {
-        this.detalleVenta.add(detalleVenta);
-    }
-
+    // helper para agregar detalles
+    public void addDetalleVenta(DetalleVenta det) { this.detalleVenta.add(det); }
 }

@@ -1,6 +1,7 @@
 package com.cibertec.model;
 
 import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonBackReference;   // <<-- nuevo
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class DetalleVenta {
     @Column(name = "idDetalleVenta")
     private int idDetalleVenta;
 
+    @JsonBackReference 
     @ManyToOne
     @JoinColumn(name = "idVenta", nullable = false)
     private Venta venta;
@@ -30,12 +32,4 @@ public class DetalleVenta {
 
     @Column(name = "total", precision = 10, scale = 2, nullable = false)
     private BigDecimal total;
-
-    public Producto getProducto() {
-        return producto;
-    }
-
-    public void setProducto(Producto producto) {
-        this.producto = producto;
-    }
 }
