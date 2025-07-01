@@ -14,6 +14,7 @@ import { Usuario } from 'src/app/Interfaces/usuario';
 import { RolService } from 'src/app/Services/rol.service';
 import { UsuarioService } from 'src/app/Services/usuario.service';
 import { UtilidadService } from 'src/app/Reutilizable/utilidad.service';
+import { ResponseApi } from 'src/app/Interfaces/response-api';
 
 @Component({
   selector    : 'app-modal-usuario',
@@ -84,39 +85,80 @@ export class ModalUsuarioComponent implements OnInit {
       }
     });
   }
+guardarUsuario(): void {
+  const claveValor = (this.formularioUsuario.value.clave || '').trim();
 
-  guardarEditar_Usuario(): void {
-    const claveValor = (this.formularioUsuario.value.clave || '').trim();
+  console.log('Datos enviados al backend:', this.formularioUsuario.value);
 
-    const dto: Usuario = {
-      idUsuario     : this.datosUsuario ? this.datosUsuario.idUsuario : 0,
-      nombreCompleto: this.formularioUsuario.value.nombreCompleto,
-      correo        : this.formularioUsuario.value.correo,
-      clave         : claveValor === '' ? null : claveValor,
-      esActivo      : this.formularioUsuario.value.esActivo === '1',
-      fechaRegistro : '',
-      rol           : {
-        idRol        : this.formularioUsuario.value.idRol,
-        nombre       : '',
-        fechaRegistro: ''
-      }
-    };
+  const dto: Usuario = {
+    idUsuario     : 0,  // Al agregar un nuevo usuario, el id debe ser 0
+    nombreCompleto: this.formularioUsuario.value.nombreCompleto,
+    correo        : this.formularioUsuario.value.correo,
+    clave         : claveValor === '' ? null : claveValor,  // Si no hay clave, la dejamos como null
+    esActivo      : this.formularioUsuario.value.esActivo === '1',
+    fechaRegistro : '',
+    rol           : {
+      idRol        : this.formularioUsuario.value.idRol,
+      nombre       : '',
+      fechaRegistro: ''
+    }
+  };
 
-    const obs$ = this.datosUsuario
-      ? this.usuarioSrv.editar(dto)
-      : this.usuarioSrv.guardar(dto);
+  console.log('DTO para agregar usuario:', dto);
 
-    obs$.subscribe({
-      next : (data) => {
-        if (data.status) {
-          const msg = this.datosUsuario ? 'Usuario editado' : 'Usuario registrado';
-          this.utilidadSrv.mostrarAlerta(`${msg} correctamente`, 'Éxito');
-          this.dialogRef.close('true');
-        } else {
-          this.utilidadSrv.mostrarAlerta(data.msg ?? 'Operación fallida', 'Error');
-        }
-      },
-      error: () => this.utilidadSrv.mostrarAlerta('Error de servidor', 'Error')
-    });
+  this.usuarioSrv.guardar(dto).subscribe({
+    next: (data) => {
+      console.log('Respuesta del backend al agregar usuario:', data);
+      if (data && data.status) {  // Verifica si la respuesta es exitosa
+  this.utilidadSrv.mostrarAlerta('Usuario registrado con éxito', 'Éxito');
+  this.dialogRef.close('true');
+} else {
+  this.utilidadSrv.mostrarAlerta('Error en la respuesta del servidor', 'Error');
+}
+
+    },
+    error: (error) => {
+      console.error('Error al agregar usuario:', error);
+      this.utilidadSrv.mostrarAlerta('Error de servidor. Por favor, inténtalo más tarde.', 'Error');
+    }
+  });
+}
+
+editarUsuario(): void {
+  const claveValor = (this.formularioUsuario.value.clave || '').trim();
+
+  const dto: Usuario = {
+    idUsuario     : this.datosUsuario ? this.datosUsuario.idUsuario : 0,
+    nombreCompleto: this.formularioUsuario.value.nombreCompleto,
+    correo        : this.formularioUsuario.value.correo,
+    clave         : claveValor === '' ? null : claveValor,
+    esActivo      : this.formularioUsuario.value.esActivo === '1',
+    fechaRegistro : '',
+    rol           : {
+      idRol        : this.formularioUsuario.value.idRol,
+      nombre       : '',
+      fechaRegistro: ''
+    }
+  };
+
+  this.usuarioSrv.editar(dto).subscribe({
+    next: () => {
+      this.utilidadSrv.mostrarAlerta('Usuario actualizado con éxito', 'Éxito');
+      this.dialogRef.close('true');
+    },
+    error: () => {
+      this.utilidadSrv.mostrarAlerta('Error de servidor. Por favor, inténtalo más tarde.', 'Error');
+    }
+  });
+}
+
+guardarEditar_Usuario(): void {
+  if (this.datosUsuario) {
+    this.editarUsuario();  // Si estamos editando, llamamos al método de edición
+  } else {
+    this.guardarUsuario();  // Si estamos agregando, llamamos al método de agregar
   }
+}
+
+
 }

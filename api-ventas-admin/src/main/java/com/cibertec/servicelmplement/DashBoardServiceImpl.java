@@ -18,16 +18,12 @@ public class DashBoardServiceImpl implements DashBoardService {
     private ProductoRepository productoRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
     private VentaRepository ventaRepository;
 
     @Override
     public Map<String, Object> getSummary() {
         Map<String, Object> summary = new HashMap<>();
         summary.put("totalProductos", productoRepository.count());
-        summary.put("totalUsuarios", usuarioRepository.count());
         summary.put("totalVentas", ventaRepository.count());
         return summary;
     }

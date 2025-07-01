@@ -1,6 +1,8 @@
 export interface ResponseApi {
     status:boolean,
     msg: string,
-    value: any
+    value: any,
+    totalProductos?: number;  // Cambiado a campos individuales
+    totalVentas?: number; 
 
 }

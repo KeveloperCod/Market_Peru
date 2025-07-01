@@ -25,7 +25,7 @@ lista(): Observable<Usuario[]> {
   return this.http.get<Usuario[]>(`${this.urlApi}listar`);
 }
   guardar(request: Usuario):Observable<ResponseApi>{
-    return this.http.post<ResponseApi>(`${this.urlApi}Guardar`,request)
+    return this.http.post<ResponseApi>(`${this.urlApi}registrar`,request)
   }
 
   editar(request: Usuario):Observable<ResponseApi>{

@@ -24,10 +24,10 @@ Chart.register(...registerables);
 })
 export class DashBoardComponent implements OnInit {
 
-  totalIngresos: string = "0";
+  //totalIngresos: string = "0";
   totalVentas: string = "0";
-  totalProductos: string = "0";
 
+totalProductos:  string = "0";
   constructor(
     private _dashboardServicio: DashBoardService
   ) { }
@@ -38,7 +38,7 @@ export class DashBoardComponent implements OnInit {
       data: {
         labels: labelGrafico,
         datasets: [{
-          label: '# de Ventas',
+          label: 'Cant.',
           data: dataGrafico,
           backgroundColor: [
             'rgba(54,162,235,0.2)'
@@ -62,22 +62,29 @@ export class DashBoardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._dashboardServicio.resumen().subscribe({
-      next: (data) => {
-        if (data.status) {
-          this.totalIngresos = data.value.totalIngresos;
-          this.totalVentas = data.value.totalVentas;
-          this.totalProductos = data.value.totalProductos;
+  this._dashboardServicio.resumen().subscribe({
+    next: (data) => {
+      console.log('Respuesta del backend:', data);
 
-          const arrayData: any[] = data.value.ventasUltimaSemana;
-          const labelTemp = arrayData.map((value) => value.fecha);
-          const dataTemp = arrayData.map((value) => value.total);
+      // Verificar que data.value existe antes de acceder a las propiedades
+      if (data && data.status && data.value) {
+        this.totalProductos = data.value.totalProductos || '0';
+        this.totalVentas = data.value.totalVentas || '0';
+        console.log("Valores asignados:", this.totalProductos, this.totalVentas);
 
-          this.mostrarGrafico(labelTemp, dataTemp);
-        }
-      },
-      error: (e) => {}
-    });
-  }
+        // Ahora que los datos están disponibles, crear el gráfico
+        const arrayData: any[] = [this.totalVentas, this.totalProductos];  // Ejemplo de cómo usar los datos para el gráfico
+        const labelTemp = ['Ventas', 'Productos'];  // Etiquetas del gráfico
+        this.mostrarGrafico(labelTemp, arrayData);  // Llamar a la función para mostrar el gráfico
+      } else {
+        console.log("Estado de la respuesta es false o data.value no está definida:", data);
+      }
+    },
+    error: (e) => {
+      console.error('Error en la respuesta:', e);
+    }
+  });
+}
+
 
 }
