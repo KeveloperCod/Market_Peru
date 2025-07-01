@@ -47,7 +47,16 @@ export class ReporteComponent implements OnInit, AfterViewInit {
 
   formularioFiltro: FormGroup;
   listaVentasReporte: Reporte[] = [];
-  columnasTabla: string[] = ['fechaRegistro', 'numeroVenta', 'tipoPago', 'total', 'producto', 'cantidad', 'precio', 'totalProducto'];
+  columnasTabla: string[] = [
+    'fechaRegistro',
+    'numeroDocumento',
+    'tipoPago',
+    'totalVenta',
+    'producto',
+    'cantidad',
+    'precio',
+    'totalProducto'
+  ];
   dataVentaReporte = new MatTableDataSource<Reporte>([]);
   @ViewChild(MatPaginator) paginacionTabla!: MatPaginator;
 
@@ -70,24 +79,37 @@ export class ReporteComponent implements OnInit, AfterViewInit {
 
   /* ---------- Buscar ventas ---------- */
   buscarVentas(): void {
-    const fechaInicio = moment(this.formularioFiltro.value.fechaInicio).format('DD/MM/YYYY');
-    const fechaFin   = moment(this.formularioFiltro.value.fechaFin).format('DD/MM/YYYY');
+    const fechaInicioISO = moment(this.formularioFiltro.value.fechaInicio).format('YYYY-MM-DD');
+    const fechaFinISO = moment(this.formularioFiltro.value.fechaFin).format('YYYY-MM-DD');
 
-    if (fechaInicio === 'Invalid date' || fechaFin === 'Invalid date') {
+    if (fechaInicioISO === 'Invalid date' || fechaFinISO === 'Invalid date') {
       this._utilidadServicio.mostrarAlerta('Debes ingresar ambas fechas', 'Oops!');
       return;
     }
 
-    this._ventaServicio.reporte(fechaInicio, fechaFin).subscribe({
-      next: (data) => {
-        if (data.status) {
-          this.listaVentasReporte = data.value as Reporte[];
-          this.dataVentaReporte.data = this.listaVentasReporte;
-        } else {
+    this._ventaServicio.reporte(fechaInicioISO, fechaFinISO).subscribe({
+      next: (ventas: any[]) => {
+        if (!ventas || ventas.length === 0) {
           this.listaVentasReporte = [];
           this.dataVentaReporte.data = [];
           this._utilidadServicio.mostrarAlerta('No se encontraron datos', 'Oops!');
+          return;
         }
+
+        this.listaVentasReporte = ventas.flatMap(v =>
+          v.detalleVenta.map((d: any) => ({
+            fechaRegistro: moment(v.fechaRegistro).format('DD/MM/YYYY HH:mm'),
+            numeroDocumento: v.numeroDocumento,
+            tipoPago: v.tipoPago,
+            totalVenta: v.total.toFixed(2),
+            producto: d.producto.nombre,
+            cantidad: d.cantidad,
+            precio: d.precio.toFixed(2),
+            totalProducto: d.total.toFixed(2)
+          }))
+        );
+
+        this.dataVentaReporte.data = this.listaVentasReporte;
       },
       error: () => {
         this._utilidadServicio.mostrarAlerta('Ocurrió un error al obtener los datos', 'Error');

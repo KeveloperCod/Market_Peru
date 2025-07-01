@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,6 +95,14 @@ public class VentaServiceImpl implements VentaService {
 
         return ventaRepository.save(venta);
     }
+    
+    @Override
+    public List<Venta> obtenerVentasPorRangoFecha(String fechaInicio, String fechaFin) {
+        LocalDate inicio = LocalDate.parse(fechaInicio);
+        LocalDate fin = LocalDate.parse(fechaFin);
+        return ventaRepository.findByFechaRegistroBetween(inicio.atStartOfDay(), fin.atTime(23, 59, 59));
+    }
+
 
     @Override
     public List<Venta> getAllVentas() {

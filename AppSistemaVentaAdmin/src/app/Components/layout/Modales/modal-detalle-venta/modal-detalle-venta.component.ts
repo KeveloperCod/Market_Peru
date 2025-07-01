@@ -30,20 +30,29 @@ import { DetalleVenta } from 'src/app/Interfaces/detalle-venta';
 })
 export class ModalDetalleVentaComponent implements OnInit {
 
-  fechaRegistro: string = '';
-  numeroDocumento: string = '';
-  tipoPago: string = '';
-  total: string = '';
+  fechaRegistro = '';
+  numeroDocumento = '';
+  tipoPago = '';
+  total = '';
   detalleVenta: DetalleVenta[] = [];
-  columnasTabla: string[] = ['producto', 'cantidad', 'precio', 'total'];
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public _venta: Venta
-  ) {
-    this.fechaRegistro = _venta.fechaRegistro!;
+  /** Los identificadores DEBEN coincidir con los matColumnDef del HTML */
+  columnasTabla: string[] = ['descripcionProducto', 'cantidad', 'precioTexto', 'totalTexto'];
+
+  constructor(@Inject(MAT_DIALOG_DATA) public _venta: Venta) {
+
+    /* ─── Información cabecera ─── */
+    const fecha = new Date(_venta.fechaRegistro ?? '');
+    this.fechaRegistro = fecha.toLocaleDateString('es-PE', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    });
+
     this.numeroDocumento = _venta.numeroDocumento!;
-    this.tipoPago = _venta.tipoPago;
-    this.total = _venta.totalTexto;
+    this.tipoPago        = _venta.tipoPago;
+    this.total           = _venta.totalTexto;
+
+    /* ─── Detalle ─── */
     this.detalleVenta = _venta.detalleVenta;
   }
 
