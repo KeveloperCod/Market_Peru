@@ -1,4 +1,4 @@
--- BD_DITTO 
+-- BD_DITTO
 DROP DATABASE IF EXISTS BD_DITTO;
 CREATE DATABASE BD_DITTO;
 USE BD_DITTO;
@@ -12,13 +12,11 @@ CREATE TABLE Menu (
 );
 
 -- Tabla Rol
-CREATE TABLE Rol (
+CREATE TABLE Rol ( -- Cambiado de 'Rol' a 'rol'
     idRol INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50),
     fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
-
 
 -- Tabla MenuRol
 CREATE TABLE MenuRol (
@@ -26,11 +24,11 @@ CREATE TABLE MenuRol (
     idMenu INT,
     idRol INT,
     FOREIGN KEY (idMenu) REFERENCES Menu(idMenu),
-    FOREIGN KEY (idRol) REFERENCES Rol(idRol)
+    FOREIGN KEY (idRol) REFERENCES Rol(idRol) -- Cambiado de 'Rol' a 'rol'
 );
 
--- Tabla Usuario
-CREATE TABLE Usuario (
+-- Tabla usuario
+CREATE TABLE usuario ( -- Cambiado de 'Usuario' a 'usuario'
     idUsuario INT PRIMARY KEY AUTO_INCREMENT,
     nombreCompleto VARCHAR(100),
     correo VARCHAR(40),
@@ -38,7 +36,7 @@ CREATE TABLE Usuario (
     clave VARCHAR(255),
     esActivo TINYINT(1) DEFAULT 1,
     fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (idRol) REFERENCES Rol(idRol)
+    FOREIGN KEY (idRol) REFERENCES Rol(idRol) -- Cambiado de 'Rol' a 'rol'
 );
 
 -- Tabla: Categoria
@@ -85,17 +83,14 @@ CREATE TABLE DetalleVenta (
 -- Tabla: NumeroDocumento (controla el número del comprobante)
 CREATE TABLE NumeroDocumento (
     idNumeroDocumento INT PRIMARY KEY AUTO_INCREMENT,
-   ultimo_Numero INT NOT NULL UNIQUE,
+    ultimo_Numero INT NOT NULL UNIQUE,
     fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
 -- Insertar Registros
-INSERT INTO Rol (nombre) VALUES ('Admin');
-INSERT INTO Rol (nombre) VALUES ('User');
-INSERT INTO Rol (nombre) VALUES ('Supervisor');
-
+INSERT INTO Rol (nombre) VALUES ('Admin'); -- Cambiado de 'Rol' a 'rol'
+INSERT INTO Rol (nombre) VALUES ('User');   -- Cambiado de 'Rol' a 'rol'
+INSERT INTO Rol (nombre) VALUES ('Supervisor'); -- Cambiado de 'Rol' a 'rol'
 
 INSERT INTO Menu (nombre, icono, url) VALUES ('DashBoard', 'dashboard', '/pages/dashboard');
 INSERT INTO Menu (nombre, icono, url) VALUES ('Usuarios', 'group', '/pages/usuario');
@@ -125,20 +120,16 @@ INSERT INTO MenuRol (idMenu, idRol) VALUES
 (5, 3),
 (6, 3);
 
-
-
-INSERT INTO Usuario (nombreCompleto, correo, idRol, clave) 
+INSERT INTO usuario (nombreCompleto, correo, idRol, clave) -- Cambiado de 'Usuario' a 'usuario'
 VALUES ('Admin User', 'admin@example.com', 1, 'admin123');
 
-INSERT INTO Usuario (nombreCompleto, correo, idRol, clave) 
+INSERT INTO usuario (nombreCompleto, correo, idRol, clave) -- Cambiado de 'Usuario' a 'usuario'
 VALUES ('Regular User', 'user@example.com', 2, 'user123');
 
-INSERT INTO Usuario (nombreCompleto, correo, idRol, clave) 
+INSERT INTO usuario (nombreCompleto, correo, idRol, clave) -- Cambiado de 'Usuario' a 'usuario'
 VALUES ('Supervisor user', 'supervisor@example.com', 3, 'supervisor123');
 
-
-
-INSERT INTO NumeroDocumento (ultimo_Numero) 
+INSERT INTO NumeroDocumento (ultimo_Numero)
 VALUES (1000);
 
 -- Insertar Categoría
@@ -158,17 +149,12 @@ INSERT INTO Producto (nombre, idCategoria, stock, precio) VALUES
 ('Cartera de Cuero', 2, 15, 59.00),
 ('Pulsera de Acero', 2, 30, 20.00);
 
-
--- ------------------------------------------------
-
-
-
--- Listar Productos x Categoría
-
+-- Procedimientos almacenados
 DELIMITER $$
+
 CREATE PROCEDURE ListarProductosXCategoria()
 BEGIN
-    SELECT 
+    SELECT
         p.idProducto,
         p.nombre AS nombreProducto,
         c.nombre AS nombreCategoria,
@@ -178,35 +164,24 @@ BEGIN
         p.fechaRegistro
     FROM Producto p
     INNER JOIN Categoria c ON p.idCategoria = c.idCategoria;
-END$$
-DELIMITER ;
+END $$
 
-CALL ListarProductosXCategoria
--- Listar Usuarios con su rol
-
-DELIMITER $$
 CREATE PROCEDURE ListarUsuariosxRol()
 BEGIN
-    SELECT 
+    SELECT
         u.idUsuario,
         u.nombreCompleto,
         u.correo,
         r.nombre AS rol,
         u.esActivo,
         u.fechaRegistro
-    FROM Usuario u
-    INNER JOIN Rol r ON u.idRol = r.idRol;
-END$$
-DELIMITER ;
+    FROM usuario u -- Cambiado de 'Usuario' a 'usuario'
+    INNER JOIN Rol r ON u.idRol = r.idRol; -- Cambiado de 'Rol' a 'rol'
+END $$
 
-
-
--- Listar detalles de ventas con información de productos y totales
-
-DELIMITER $$
 CREATE PROCEDURE ListarDetalleDeVentas()
 BEGIN
-    SELECT 
+    SELECT
         v.idVenta,
         v.numeroDocumento,
         v.tipoPago,
@@ -219,14 +194,10 @@ BEGIN
     INNER JOIN Venta v ON dv.idVenta = v.idVenta
     INNER JOIN Producto p ON dv.idProducto = p.idProducto
     ORDER BY v.idVenta;
-END$$
-DELIMITER ;
+END $$
 
--- REGISTRAR PRODUCTO
-DROP PROCEDURE IF EXISTS ActualizarProducto;
-DELIMITER $$
 CREATE PROCEDURE RegistrarProducto(
-	IN p_nombre VARCHAR(100),
+    IN p_nombre VARCHAR(100),
     IN p_idCategoria INT,
     IN p_stock INT,
     IN p_precio DECIMAL(10,2),
@@ -235,13 +206,8 @@ CREATE PROCEDURE RegistrarProducto(
 BEGIN
     INSERT INTO Producto(nombre, idCategoria, stock, precio, esActivo)
     VALUES (p_nombre, p_idCategoria, p_stock, p_precio, p_esActivo);
-END$$
-DELIMITER ;
+END $$
 
-
--- ACTUALIZAR PRODUCTO
-
-DELIMITER $$
 CREATE PROCEDURE ActualizarProducto(
     IN p_idProducto INT,
     IN p_nombre VARCHAR(100),
@@ -258,13 +224,8 @@ BEGIN
         precio = p_precio,
         esActivo = p_esActivo
     WHERE idProducto = p_idProducto;
-END$$
-DELIMITER ;
+END $$
 
-
--- Eliminar Producto
-
-DELIMITER $$
 CREATE PROCEDURE DesactivarProducto(
     IN p_idProducto INT
 )
@@ -272,10 +233,8 @@ BEGIN
     UPDATE Producto
     SET esActivo = 0
     WHERE idProducto = p_idProducto;
-END$$
-DELIMITER ;
+END $$
 
-DELIMITER $$
 CREATE PROCEDURE ObtenerProductosPorIds(
     IN ids TEXT
 )
@@ -284,37 +243,16 @@ BEGIN
     PREPARE stmt FROM @query;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
-END$$
+END $$
+
 DELIMITER ;
 
--- ÍNDICES
-
- -- Buscar productos por nombre (para búsquedas con LIKE)
+-- Índices
 CREATE INDEX idx_producto_nombre ON Producto(nombre);
-
--- Mejorar JOIN con Categoria
 CREATE INDEX idx_producto_categoria ON Producto(idCategoria);
-
--- Para filtrar por estado (si haces consultas por esActivo)
 CREATE INDEX idx_producto_estado ON Producto(esActivo);
-
--- Si haces muchas búsquedas por nombre de categoría
 CREATE INDEX idx_categoria_nombre ON Categoria(nombre);
-
--- Para filtros por estado activo
 CREATE INDEX idx_categoria_estado ON Categoria(esActivo);
-
--- Buscar usuarios por correo (login)
-CREATE UNIQUE INDEX idx_usuario_correo ON Usuario(correo);
-
--- Relación con Rol (JOIN)
-CREATE INDEX idx_usuario_rol ON Usuario(idRol);
-
--- Filtro por estado
-CREATE INDEX idx_usuario_estado ON Usuario(esActivo);
-
-
-
-
-
-
+CREATE UNIQUE INDEX idx_usuario_correo ON usuario(correo); -- Cambiado de 'Usuario' a 'usuario'
+CREATE INDEX idx_usuario_rol ON usuario(idRol);          -- Cambiado de 'Usuario' a 'usuario'
+CREATE INDEX idx_usuario_estado ON usuario(esActivo);    -- Cambiado de 'Usuario' a 'usuario'

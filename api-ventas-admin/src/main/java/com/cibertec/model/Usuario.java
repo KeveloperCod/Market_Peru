@@ -10,7 +10,7 @@ import lombok.*;
 @Table(name = "Usuario")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // ✅ AGREGADO
+@Builder 
 public class Usuario {
 
     @Id
