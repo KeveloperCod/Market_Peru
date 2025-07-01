@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MAT_DATE_FORMATS, MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,7 +11,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
 import { CommonModule } from '@angular/common';
-
 import * as moment from 'moment';
 import * as XLSX from 'xlsx';
 
@@ -21,10 +20,7 @@ import { UtilidadService } from 'src/app/Reutilizable/utilidad.service';
 
 export const MY_DATA_FORMATS = {
   parse: { dateInput: 'DD/MM/YYYY' },
-  display: {
-    dateInput: 'DD/MM/YYYY',
-    monthYearLabel: 'MMMM YYYY'
-  }
+  display: { dateInput: 'DD/MM/YYYY', monthYearLabel: 'MMMM YYYY' }
 };
 
 @Component({
@@ -32,9 +28,7 @@ export const MY_DATA_FORMATS = {
   standalone: true,
   templateUrl: './reporte.component.html',
   styleUrls: ['./reporte.component.css'],
-  providers: [
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATA_FORMATS }
-  ],
+  providers: [{ provide: MAT_DATE_FORMATS, useValue: MY_DATA_FORMATS }],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -46,8 +40,7 @@ export const MY_DATA_FORMATS = {
     MatCardModule,
     MatIconModule,
     MatTableModule,
-    MatPaginatorModule,
-    MatRippleModule
+    MatPaginatorModule
   ]
 })
 export class ReporteComponent implements OnInit, AfterViewInit {
@@ -55,8 +48,7 @@ export class ReporteComponent implements OnInit, AfterViewInit {
   formularioFiltro: FormGroup;
   listaVentasReporte: Reporte[] = [];
   columnasTabla: string[] = ['fechaRegistro', 'numeroVenta', 'tipoPago', 'total', 'producto', 'cantidad', 'precio', 'totalProducto'];
-  dataVentaReporte = new MatTableDataSource(this.listaVentasReporte);
-
+  dataVentaReporte = new MatTableDataSource<Reporte>([]);
   @ViewChild(MatPaginator) paginacionTabla!: MatPaginator;
 
   constructor(
@@ -66,7 +58,7 @@ export class ReporteComponent implements OnInit, AfterViewInit {
   ) {
     this.formularioFiltro = this.fb.group({
       fechaInicio: ['', Validators.required],
-      fechaFin: ['', Validators.required],
+      fechaFin: ['', Validators.required]
     });
   }
 
@@ -76,20 +68,21 @@ export class ReporteComponent implements OnInit, AfterViewInit {
     this.dataVentaReporte.paginator = this.paginacionTabla;
   }
 
+  /* ---------- Buscar ventas ---------- */
   buscarVentas(): void {
-    const _fechaInicio = moment(this.formularioFiltro.value.fechaInicio).format('DD/MM/YYYY');
-    const _fechaFin = moment(this.formularioFiltro.value.fechaFin).format('DD/MM/YYYY');
+    const fechaInicio = moment(this.formularioFiltro.value.fechaInicio).format('DD/MM/YYYY');
+    const fechaFin   = moment(this.formularioFiltro.value.fechaFin).format('DD/MM/YYYY');
 
-    if (_fechaInicio === 'Invalid date' || _fechaFin === 'Invalid date') {
+    if (fechaInicio === 'Invalid date' || fechaFin === 'Invalid date') {
       this._utilidadServicio.mostrarAlerta('Debes ingresar ambas fechas', 'Oops!');
       return;
     }
 
-    this._ventaServicio.reporte(_fechaInicio, _fechaFin).subscribe({
+    this._ventaServicio.reporte(fechaInicio, fechaFin).subscribe({
       next: (data) => {
         if (data.status) {
-          this.listaVentasReporte = data.value;
-          this.dataVentaReporte.data = data.value;
+          this.listaVentasReporte = data.value as Reporte[];
+          this.dataVentaReporte.data = this.listaVentasReporte;
         } else {
           this.listaVentasReporte = [];
           this.dataVentaReporte.data = [];
@@ -102,10 +95,11 @@ export class ReporteComponent implements OnInit, AfterViewInit {
     });
   }
 
+  /* ---------- Exportar a Excel ---------- */
   exportarExcel(): void {
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(this.listaVentasReporte);
     XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
-    XLSX.writeFile(wb, 'Reporte Ventas.xlsx');
+    XLSX.writeFile(wb, 'Reporte_Ventas.xlsx');
   }
 }

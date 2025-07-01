@@ -3,5 +3,6 @@ export interface VentaResponseDTO {
   numeroDocumento: string;
   tipoPago:        string;
   total:           number;
-  fechaRegistro:   string; 
+  fechaRegistro:   string;
+  totalTexto?:     string; 
 }

@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 
 import { Venta } from '../Interfaces/venta';
 import { VentaResponseDTO } from '../Interfaces/venta-response-dto';
-import { ResponseApi } from '../Interfaces/response-api';   // ← se sigue usando en historial y reporte
+import { ResponseApi } from '../Interfaces/response-api';
 
 @Injectable({
   providedIn: 'root'
@@ -16,28 +16,30 @@ export class VentaService {
 
   constructor(private http: HttpClient) {}
 
-  /* ---------- REGISTRAR (ahora devuelve el DTO plano) ---------- */
+  /* ---------- REGISTRO ---------- */
   registrar(request: Venta): Observable<VentaResponseDTO> {
     return this.http.post<VentaResponseDTO>(`${this.urlApi}registrar`, request)
-      .pipe(
-        catchError(err => {
-          console.error('Error en registrar venta', err);
-          return throwError(() => err);
-        })
-      );
+      .pipe(catchError(err => throwError(() => err)));
   }
 
-  /* ---------- HISTORIAL Y REPORTE SIGUEN IGUAL ---------- */
-  historial(buscarPor: string, numeroVenta: string,
-            fechaInicio: string, fechaFin: string): Observable<ResponseApi> {
+  /* ---------- HISTORIAL COMPLETO ---------- */
+  historial(): Observable<VentaResponseDTO[]> {
+    return this.http.get<VentaResponseDTO[]>(`${this.urlApi}listar`)
+      .pipe(catchError(err => throwError(() => err)));
+  }
+
+  /* ---------- HISTORIAL FILTRADO ---------- */
+  historialFiltrado(buscarPor: string, numeroVenta: string,
+                    fechaInicio: string, fechaFin: string): Observable<ResponseApi> {
     return this.http.get<ResponseApi>(
       `${this.urlApi}Historial?buscarPor=${buscarPor}&numeroVenta=${numeroVenta}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
-    );
+    ).pipe(catchError(err => throwError(() => err)));
   }
 
+  /* ---------- REPORTE  (lista detallada para Excel / tabla) ---------- */
   reporte(fechaInicio: string, fechaFin: string): Observable<ResponseApi> {
     return this.http.get<ResponseApi>(
       `${this.urlApi}Reporte?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
-    );
+    ).pipe(catchError(err => throwError(() => err)));
   }
 }
